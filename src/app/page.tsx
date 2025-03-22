@@ -1,15 +1,17 @@
 
-import HomeClient from "./HomeClient";
-import { auth } from "@clerk/nextjs/server";
+import Navbar from "@/components/root/Navbar";
+// import { auth, currentUser } from "@clerk/nextjs/server";
 
 export default async function Home() {
-  const { userId } = await auth();
+  // const { userId } = await auth();
+  // const user = await currentUser();
+
+
 
   return (
     <div className="p-5">
-      <div className="w-100 flex gap-x-5 justify-end">
-        <HomeClient userId={userId} />
-      </div>
+      <Navbar />
+
     </div>
   );
 }

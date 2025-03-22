@@ -2,15 +2,9 @@
 
 import { ModeToggler } from "@/components/ModeToggler";
 import { UserButton } from "@clerk/nextjs";
-import { useEffect } from "react";
 
-export default function HomeClient({ userId }: { userId: string | null }) {
-    useEffect(() => {
-        if (userId) {
-            fetch("/api/auth/register", { method: "POST" })
-                .catch((error) => console.error("Error syncing user:", error));
-        }
-    }, [userId]);
+export default function HomeClient() {
+
 
     return (
         <div className="p-5">
