@@ -6,10 +6,10 @@ import Link from "next/link"
 
 function Navbar() {
     return (
-        <div className="px-5 flex justify-between  border-b pb-4 ">
+        <header className="px-5 flex justify-between  border-b py-4 fixed w-full z-50 bg-black/50 backdrop-blur-sm">
             <Link href="/" className="flex items-center gap-x-2">
                 <Image src="/images/fashion-corner.png" alt="logo" width={33} height={30} />
-                Fashion Corner
+                <span className="text-white">Fashion Corner</span>
             </Link>
 
             <div className="flex gap-x-6 justify-end">
@@ -20,9 +20,7 @@ function Navbar() {
                 </div>
 
             </div>
-
-
-        </div>
+        </header>
     )
 }
 
