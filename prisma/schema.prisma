@@ -24,3 +24,20 @@ model User {
   createdAt DateTime @default(now())  
   updatedAt DateTime @updatedAt
 }
+
+model Product {
+  id          String   @id @default(cuid())
+  externalId  String   @unique
+  title       String
+  slug        String?
+  price       Float
+  description String   @db.Text
+  category    String
+  categorySlug String?
+  image       String
+  images      Json?
+  rating      Float    @default(0)
+  ratingCount Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
