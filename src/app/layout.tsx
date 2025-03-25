@@ -6,6 +6,7 @@ import {
 
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { CartProvider } from "@/contexts/CartContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,7 +29,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-
     <ClerkProvider>
       <html lang="en">
         <body
@@ -40,9 +40,11 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <main>
-              {children}
-            </main>
+            <CartProvider>
+              <main>
+                {children}
+              </main>
+            </CartProvider>
           </ThemeProvider>
         </body>
       </html>
