@@ -1,11 +1,11 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
-const isProtectedRoute = createRouteMatcher(["/dashboard", "/dashboard(.*)"]);
-
-export default clerkMiddleware(async (auth, req) => {
-    if (isProtectedRoute(req)) await auth.protect()
-})
+export default clerkMiddleware();
 
 export const config = {
-    matcher: ["/((?!_next|.*\\.(?:png|jpg|jpeg|gif|ico|css|js|svg)).*)"],
+    matcher: [
+        "/((?!.*\\.[\\w]+$|_next).*)",
+        "/",
+        "/(api|trpc)(.*)",
+    ],
 };

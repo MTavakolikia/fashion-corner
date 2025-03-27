@@ -3,41 +3,126 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
-enum Role {
+model address {
+  id        String   @id
+  userId    String
+  fullName  String
+  address   String
+  city      String
+  state     String
+  zipCode   String
+  phone     String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  orders    order[]
+
+  @@index([userId], map: "Address_userId_idx")
+}
+
+model order {
+  id        String       @id
+  userId    String
+  status    order_status @default(PENDING)
+  total     Float
+  addressId String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime
+  items     orderitem[]
+  shippingAddress address @relation(fields: [addressId], references: [id])
+
+  @@index([addressId], map: "Order_addressId_idx")
+  @@index([userId], map: "Order_userId_idx")
+}
+
+model orderitem {
+  id        String   @id
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  order     order    @relation(fields: [orderId], references: [id])
+  product   product  @relation(fields: [productId], references: [id])
+
+  @@index([orderId], map: "OrderItem_orderId_idx")
+  @@index([productId], map: "OrderItem_productId_idx")
+}
+
+model product {
+  id           String      @id
+  externalId   String      @unique(map: "Product_externalId_key")
+  title        String
+  slug         String?
+  price        Float
+  description  String      @db.Text
+  category     String
+  categorySlug String?
+  image        String
+  images       Json?
+  rating       Float       @default(0)
+  ratingCount  Int        @default(0)
+  stock        Int        @default(0)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime
+  orderItems   orderitem[]
+
+  @@index([category], map: "Product_category_idx")
+}
+
+model review {
+  id        String   @id
+  userId    String
+  productId String
+  rating    Int
+  comment   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@index([productId], map: "Review_productId_idx")
+  @@index([userId], map: "Review_userId_idx")
+}
+
+model user {
+  id        String    @id
+  name      String?
+  email     String    @unique(map: "User_email_key")
+  picture   String?   @db.Text
+  role      user_role @default(USER)
+  clerkId   String    @unique(map: "User_clerkId_key")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+}
+
+model wishlist {
+  id        String   @id
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@unique([userId, productId], map: "Wishlist_userId_productId_key")
+  @@index([productId], map: "Wishlist_productId_idx")
+  @@index([userId], map: "Wishlist_userId_idx")
+}
+
+enum order_status {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum user_role {
   USER
   ADMIN
   SELLER
-}
-
-model User {
-  id        String   @id @default(uuid())
-  clerkId   String   @unique  
-  name      String?
-  email     String   @unique
-  picture   String?  @db.Text
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())  
-  updatedAt DateTime @updatedAt
-}
-
-model Product {
-  id          String   @id @default(cuid())
-  externalId  String   @unique
-  title       String
-  slug        String?
-  price       Float
-  description String   @db.Text
-  category    String
-  categorySlug String?
-  image       String
-  images      Json?
-  rating      Float    @default(0)
-  ratingCount Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 }
