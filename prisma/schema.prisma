@@ -43,7 +43,7 @@ model order {
 model orderitem {
   id        String   @id
   orderId   String
-  productId String
+  productId String  // Ensure productId is NOT optional
   quantity  Int
   price     Float
   createdAt DateTime @default(now())
@@ -54,6 +54,8 @@ model orderitem {
   @@index([orderId], map: "OrderItem_orderId_idx")
   @@index([productId], map: "OrderItem_productId_idx")
 }
+
+
 
 model product {
   id           String      @id

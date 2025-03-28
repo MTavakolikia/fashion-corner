@@ -13,10 +13,27 @@ export async function POST(req: Request) {
         const body = await req.json();
         const validatedData = createOrderSchema.parse(body);
 
-        // First, create the shipping address
+        // Validate all product IDs exist before creating order
+        const productIds = validatedData.items.map(item => item.productId);
+        const existingProducts = await prisma.product.findMany({
+            where: { id: { in: productIds } },
+            select: { id: true },
+        });
+
+        const existingProductIds = new Set(existingProducts.map(p => p.id));
+
+        const invalidItems = validatedData.items.filter(item => !existingProductIds.has(item.productId));
+        if (invalidItems.length > 0) {
+            return NextResponse.json(
+                { error: `Some products do not exist: ${invalidItems.map(i => i.productId).join(', ')}` },
+                { status: 400 }
+            );
+        }
+
+        // Create the shipping address
         const address = await prisma.address.create({
             data: {
-                id: `addr_${Date.now()}`,
+                id: `addr_${crypto.randomUUID()}`,
                 userId,
                 ...validatedData.shippingAddress,
                 isDefault: false,
@@ -24,10 +41,10 @@ export async function POST(req: Request) {
             },
         });
 
-        // Then create the order with the address ID
+        // Create the order
         const order = await prisma.order.create({
             data: {
-                id: `order_${Date.now()}`,
+                id: `order_${crypto.randomUUID()}`,
                 userId,
                 status: 'PENDING',
                 total: validatedData.total,
@@ -37,44 +54,40 @@ export async function POST(req: Request) {
         });
 
         // Create order items
-        await Promise.all(
-            validatedData.items.map(item =>
-                prisma.orderitem.create({
-                    data: {
-                        id: `item_${Date.now()}_${item.productId}`,
-                        orderId: order.id,
-                        productId: item.productId,
-                        quantity: item.quantity,
-                        price: item.price,
-                        updatedAt: new Date(),
-                    },
-                })
-            )
-        );
+        await prisma.orderitem.createMany({
+            data: validatedData.items.map(item => ({
+                id: `item_${crypto.randomUUID()}`,
+                orderId: order.id,
+                productId: item.productId,
+                quantity: item.quantity,
+                price: item.price,
+                updatedAt: new Date(),
+            })),
+        });
 
-        // Fetch the complete order with items and address
+        // Fetch the complete order
         const completeOrder = await prisma.order.findUnique({
             where: { id: order.id },
             include: {
                 items: {
                     include: {
-                        product: true,
+                        product: true, // Ensure this is not null
                     },
                 },
                 shippingAddress: true,
             },
         });
 
+        if (!completeOrder) {
+            throw new Error('Order not found after creation.');
+        }
+
         // Update product stock
         await Promise.all(
             validatedData.items.map(item =>
                 prisma.product.update({
                     where: { id: item.productId },
-                    data: {
-                        stock: {
-                            decrement: item.quantity,
-                        },
-                    },
+                    data: { stock: { decrement: item.quantity } },
                 })
             )
         );
@@ -103,9 +116,7 @@ export async function GET() {
                 },
                 shippingAddress: true,
             },
-            orderBy: {
-                createdAt: 'desc',
-            },
+            orderBy: { createdAt: 'desc' },
         });
 
         return NextResponse.json(orders);
@@ -113,4 +124,4 @@ export async function GET() {
         console.error('Error fetching orders:', error);
         return new NextResponse('Internal Server Error', { status: 500 });
     }
-} 
+}
