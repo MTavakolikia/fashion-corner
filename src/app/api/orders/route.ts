@@ -13,7 +13,6 @@ export async function POST(req: Request) {
         const body = await req.json();
         const validatedData = createOrderSchema.parse(body);
 
-        // Validate all product IDs exist before creating order
         const productIds = validatedData.items.map(item => item.productId);
         const existingProducts = await prisma.product.findMany({
             where: { id: { in: productIds } },
@@ -30,7 +29,6 @@ export async function POST(req: Request) {
             );
         }
 
-        // Create the shipping address
         const address = await prisma.address.create({
             data: {
                 id: `addr_${crypto.randomUUID()}`,
@@ -41,7 +39,6 @@ export async function POST(req: Request) {
             },
         });
 
-        // Create the order
         const order = await prisma.order.create({
             data: {
                 id: `order_${crypto.randomUUID()}`,
@@ -53,7 +50,6 @@ export async function POST(req: Request) {
             },
         });
 
-        // Create order items
         await prisma.orderitem.createMany({
             data: validatedData.items.map(item => ({
                 id: `item_${crypto.randomUUID()}`,
@@ -65,13 +61,12 @@ export async function POST(req: Request) {
             })),
         });
 
-        // Fetch the complete order
         const completeOrder = await prisma.order.findUnique({
             where: { id: order.id },
             include: {
                 items: {
                     include: {
-                        product: true, // Ensure this is not null
+                        product: true,
                     },
                 },
                 shippingAddress: true,
@@ -82,7 +77,6 @@ export async function POST(req: Request) {
             throw new Error('Order not found after creation.');
         }
 
-        // Update product stock
         await Promise.all(
             validatedData.items.map(item =>
                 prisma.product.update({
@@ -98,7 +92,6 @@ export async function POST(req: Request) {
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }
-
 export async function GET() {
     try {
         const { userId } = await auth();
@@ -119,7 +112,18 @@ export async function GET() {
             orderBy: { createdAt: 'desc' },
         });
 
-        return NextResponse.json(orders);
+        const cleanedOrders = orders.map(order => ({
+            ...order,
+            items: order.items.filter(item => {
+                if (!item.product) {
+                    console.warn(`Warning: OrderItem with ID ${item.id} has a missing product.`);
+                    return false;
+                }
+                return true;
+            }),
+        }));
+
+        return NextResponse.json(cleanedOrders);
     } catch (error) {
         console.error('Error fetching orders:', error);
         return new NextResponse('Internal Server Error', { status: 500 });

@@ -43,17 +43,18 @@ model order {
 model orderitem {
   id        String   @id
   orderId   String
-  productId String  // Ensure productId is NOT optional
+  productId String
   quantity  Int
   price     Float
   createdAt DateTime @default(now())
   updatedAt DateTime
   order     order    @relation(fields: [orderId], references: [id])
-  product   product  @relation(fields: [productId], references: [id])
+  product   product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([orderId], map: "OrderItem_orderId_idx")
   @@index([productId], map: "OrderItem_productId_idx")
 }
+
 
 
 
