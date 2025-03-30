@@ -3,6 +3,7 @@ import { ModeToggler } from "../../ModeToggler"
 import { Navigation } from "./Navigation"
 import Image from "next/image"
 import Link from "next/link"
+import { BasketButton } from "@/components/BasketButton"
 
 function Navbar() {
     return (
@@ -14,7 +15,8 @@ function Navbar() {
 
             <div className="flex gap-x-6 justify-end">
                 <Navigation />
-                <div className="flex gap-x-2 ms-3">
+                <div className="flex items-center gap-x-3 ms-3">
+                    <BasketButton />
                     <UserButton />
                     <ModeToggler />
                 </div>
