@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { ProductCard } from '@/components/ProductCard';
 
-async function getProducts() {
+export async function getProducts() {
     const products = await prisma.product.findMany({
         orderBy: {
             createdAt: 'desc'
