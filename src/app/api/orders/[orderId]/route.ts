@@ -4,18 +4,22 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
     _request: Request,
-    { params }: { params: { orderId: string } }
+    {
+        params,
+    }: {
+        params: Promise<{ orderId: string }>
+    }
 ) {
     try {
         const { userId } = await auth();
-
+        const { orderId } = await params
         if (!userId) {
             return new NextResponse('Unauthorized', { status: 401 });
         }
 
         const order = await prisma.order.findUnique({
             where: {
-                id: params.orderId,
+                id: orderId,
                 userId
             },
             include: {

@@ -1,24 +1,11 @@
-import {
-  BoxesIcon,
-  BoxListIcon,
-  CategoriesIcon,
-  CreateStoreIcon,
-  DashboardIcon,
-  StoreIcon,
-  SettingsIcon,
-  ThreeBoxesIcon,
-  ProductsIcon,
-  InventoryIcon,
-  CouponIcon,
-  ShippingIcon,
-  OfferIcon,
-} from "@/components/dashboard/icons";
+import { ArrowLeftRight, Atom, Barcode, Boxes, BoxesIcon, CirclePercent, FileBox, LayoutDashboardIcon, SettingsIcon, Store, StoreIcon, TicketPercent, Truck } from "lucide-react";
+
 
 export const icons = [
   {
     label: "Dashboard",
     value: "dashboard",
-    path: DashboardIcon,
+    path: LayoutDashboardIcon,
   },
   {
     label: "Store",
@@ -28,12 +15,12 @@ export const icons = [
   {
     label: "Create Store",
     value: "create-store",
-    path: CreateStoreIcon,
+    path: Store,
   },
   {
     label: "Box List",
     value: "box-list",
-    path: BoxListIcon,
+    path: FileBox,
   },
   {
     label: "Boxes",
@@ -43,7 +30,7 @@ export const icons = [
   {
     label: "Categories",
     value: "categories",
-    path: CategoriesIcon,
+    path: Atom,
   },
   {
     label: "Settings",
@@ -53,31 +40,31 @@ export const icons = [
   {
     label: "ThreeBoxes",
     value: "threeboxes",
-    path: ThreeBoxesIcon,
+    path: Boxes,
   },
   {
     label: "Products",
     value: "products",
-    path: ProductsIcon,
+    path: Barcode,
   },
   {
     label: "Inventory",
     value: "inventory",
-    path: InventoryIcon,
+    path: ArrowLeftRight,
   },
   {
     label: "Coupon",
     value: "coupon",
-    path: CouponIcon,
+    path: TicketPercent,
   },
   {
     label: "shipping",
     value: "shipping",
-    path: ShippingIcon,
+    path: Truck,
   },
   {
     label: "Offer",
     value: "offer",
-    path: OfferIcon,
+    path: CirclePercent,
   },
 ];

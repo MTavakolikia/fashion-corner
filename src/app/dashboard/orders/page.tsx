@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils';
-import { order_status } from '@prisma/client';
+import { OrderStatus } from '@prisma/client';
 
 interface OrderItem {
     id: string;
@@ -20,7 +20,7 @@ interface OrderItem {
 
 interface Order {
     id: string;
-    status: order_status;
+    status: OrderStatus;
     total: number;
     createdAt: string;
     items: OrderItem[];

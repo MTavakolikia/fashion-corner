@@ -17,7 +17,7 @@ export default function UserInfo({ user }: { user: User | null }) {
             <Avatar className="w-16 h-16">
               <AvatarImage
                 src={user?.imageUrl}
-                alt={`${user?.firstName!} ${user?.lastName!}`}
+                alt={`${user?.firstName}! ${user?.lastName}!`}
               />
               <AvatarFallback className="bg-primary text-white">
                 {user?.firstName} {user?.lastName}

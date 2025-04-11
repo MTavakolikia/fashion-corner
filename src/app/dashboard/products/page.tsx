@@ -1,14 +1,7 @@
-import { prisma } from '@/lib/prisma';
 import { ProductCard } from '@/components/ProductCard';
+import { getProducts } from '@/lib/queries/products';
 
-export async function getProducts() {
-    const products = await prisma.product.findMany({
-        orderBy: {
-            createdAt: 'desc'
-        }
-    });
-    return products;
-}
+
 
 export default async function ProductsPage() {
     const products = await getProducts();

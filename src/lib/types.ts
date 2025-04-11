@@ -1,50 +1,3 @@
-import {
-  getAllStoreProducts,
-  getProductPageData,
-  getProducts,
-  getRatingStatistics,
-  getShippingDetails,
-  retrieveProductDetails,
-} from "@/queries/product";
-import {
-  getAllStores,
-  getStoreDefaultShippingDetails,
-  getStoreOrders,
-  getStorePageDetails,
-} from "@/queries/store";
-import { getAllSubCategories } from "@/queries/subCategory";
-import {
-  Cart,
-  CartItem,
-  Color,
-  FreeShipping,
-  FreeShippingCountry,
-  Prisma,
-  ProductVariantImage,
-  Review,
-  ReviewImage,
-  ShippingAddress,
-  ShippingRate,
-  Size,
-  User,
-  Country as CountryPrisma,
-  Coupon,
-  Store,
-  OrderGroup,
-  OrderItem,
-  Category,
-  SubCategory,
-  ShippingFeeMethod,
-} from "@prisma/client";
-import countries from "@/data/countries.json";
-import { getOrder } from "@/queries/order";
-import {
-  getUserOrders,
-  getUserPayments,
-  getUserWishlist,
-} from "@/queries/profile";
-import { string } from "zod";
-import { getHomeFeaturedCategories } from "@/queries/home";
 
 export interface DashboardSidebarMenuInterface {
   label: string;
@@ -52,12 +5,6 @@ export interface DashboardSidebarMenuInterface {
   link: string;
 }
 
-// SubCategory + parent category
-export type SubCategoryWithCategoryType = Prisma.PromiseReturnType<
-  typeof getAllSubCategories
->[0];
-
-// Product + variant
 export type ProductWithVariantType = {
   productId: string;
   variantId: string;
@@ -89,25 +36,17 @@ export type ProductWithVariantType = {
   questions: { id?: string; question: string; answer: string }[];
   freeShippingForAllCountries: boolean;
   freeShippingCountriesIds: { id?: string; label: string; value: string }[];
-  shippingFeeMethod: ShippingFeeMethod;
   createdAt: Date;
   updatedAt: Date;
 };
 
-// Store product
-export type StoreProductType = Prisma.PromiseReturnType<
-  typeof getAllStoreProducts
->[0];
 
-// Store default shipping details
-export type StoreDefaultShippingType = Prisma.PromiseReturnType<
-  typeof getStoreDefaultShippingDetails
->;
+
+
 
 export type CountryWithShippingRatesType = {
   countryId: string;
   countryName: string;
-  shippingRate: ShippingRate;
 };
 
 export interface Country {
@@ -117,52 +56,15 @@ export interface Country {
   region: string;
 }
 
-export type SelectMenuOption = (typeof countries)[number];
 
-export type ProductType = Prisma.PromiseReturnType<
-  typeof getProducts
->["products"][0];
-
-export type ProductWishlistType = Prisma.PromiseReturnType<
-  typeof getUserWishlist
->["wishlist"][0];
-
-export type VariantSimplified = {
-  variantId: string;
-  variantSlug: string;
-  variantName: string;
-  images: ProductVariantImage[];
-  sizes: Size[];
-};
 
 export type VariantImageType = {
   url: string;
   image: string;
 };
 
-export type ProductPageType = Prisma.PromiseReturnType<
-  typeof retrieveProductDetails
->;
 
-export type ProductPageDataType = Prisma.PromiseReturnType<
-  typeof getProductPageData
->;
 
-export type ProductShippingDetailsType = Prisma.PromiseReturnType<
-  typeof getShippingDetails
->;
-
-export type RatingStatisticsType = Prisma.PromiseReturnType<
-  typeof getRatingStatistics
->;
-
-export type StatisticsCardType = Prisma.PromiseReturnType<
-  typeof getRatingStatistics
->["ratingStatistics"];
-
-export type FreeShippingWithCountriesType = FreeShipping & {
-  eligibaleCountries: FreeShippingCountry[];
-};
 
 export type CartProductType = {
   productId: string;
@@ -188,10 +90,6 @@ export type CartProductType = {
   isFreeShipping: boolean;
 };
 
-export type ReviewWithImageType = Review & {
-  images: ReviewImage[];
-  user: User;
-};
 
 // Define a local SortOrder type
 export type SortOrder = "asc" | "desc";
@@ -205,17 +103,8 @@ export type ReviewsOrderType = {
   orderBy: "latest" | "oldest" | "highest";
 };
 
-export type CartWithCartItemsType = Cart & {
-  cartItems: CartItem[];
-  coupon: (Coupon & { store: Store }) | null;
-};
 
-export type UserShippingAddressType = ShippingAddress & {
-  country: CountryPrisma;
-  user: User;
-};
 
-export type OrderFulltType = Prisma.PromiseReturnType<typeof getOrder>;
 
 export enum OrderStatus {
   Pending = "Pending",
@@ -243,14 +132,6 @@ export enum PaymentStatus {
   Chargeback = "Chargeback",
 }
 
-export type OrderGroupWithItemsType = OrderGroup & {
-  items: OrderItem[];
-  store: Store;
-  _count: {
-    items: number;
-  };
-  coupon: Coupon | null;
-};
 
 export enum ProductStatus {
   Pending = "Pending",
@@ -288,13 +169,6 @@ export type OrderTableDateFilter =
   | "last-1-year"
   | "last-2-years";
 
-export type UserOrderType = Prisma.PromiseReturnType<
-  typeof getUserOrders
->["orders"][0];
-
-export type UserPaymentType = Prisma.PromiseReturnType<
-  typeof getUserPayments
->["payments"][0];
 
 export type PaymentTableFilter = "" | "paypal" | "credit-card";
 
@@ -321,11 +195,6 @@ export type FiltersQueryType = {
   sort: string;
 };
 
-export type CatgegoryWithSubsType = Category & {
-  subCategories: SubCategory[];
-};
-
-export type StoreOrderType = Prisma.PromiseReturnType<typeof getStoreOrders>[0];
 
 export type ProductSize = {
   size: string;
@@ -334,14 +203,7 @@ export type ProductSize = {
   quantity: number;
 };
 
-export type ProductSimpleVariantType = {
-  variantId: string;
-  variantSlug: string;
-  variantName: string;
-  variantImage: string;
-  images: ProductVariantImage[];
-  sizes: Size[];
-};
+
 
 export type ProductWithVariants = {
   id: string;
@@ -355,8 +217,6 @@ export type ProductWithVariants = {
     variantName: string;
     variantImage: string;
     slug: string;
-    sizes: Size[];
-    images: ProductVariantImage[];
   }[];
 };
 
@@ -369,9 +229,6 @@ export type SimpleProduct = {
   image: string;
 };
 
-export type FeaturedCategoryType = Prisma.PromiseReturnType<
-  typeof getHomeFeaturedCategories
->[0];
 
 export type ReviewDetailsType = {
   id: string;
@@ -389,9 +246,6 @@ export type VariantInfoType = {
   variantSlug: string;
   variantImage: string;
   variantUrl: string;
-  images: ProductVariantImage[];
-  sizes: Size[];
-  colors: Partial<Color>[];
 };
 
 export type StoreType = {
@@ -412,7 +266,6 @@ export type StoreType = {
   returnPolicy?: string;
 };
 
-export type AdminStoreType = Prisma.PromiseReturnType<typeof getAllStores>[0];
 
 export enum StoreStatus {
   PENDING = "PENDING",
@@ -421,6 +274,3 @@ export enum StoreStatus {
   DISABLED = "DISABLED",
 }
 
-export type StoreDetailsType = Prisma.PromiseReturnType<
-  typeof getStorePageDetails
->;

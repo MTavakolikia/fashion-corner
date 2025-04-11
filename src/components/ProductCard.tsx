@@ -15,8 +15,6 @@ interface ProductCardProps {
 
 export function ProductCard({ id, title, price, image, category }: ProductCardProps) {
     const { items, addItem, updateQuantity, removeItem } = useCart();
-
-    // Find if the product is already in cart
     const cartItem = items.find(item => item.id === id);
 
     const handleAddToCart = () => {

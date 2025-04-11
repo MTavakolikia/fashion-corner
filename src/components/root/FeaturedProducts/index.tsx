@@ -3,7 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { getProducts } from "@/app/dashboard/products/page"
+import { getProducts } from "@/lib/queries/products";
 
 
 
