@@ -2,7 +2,6 @@ import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import type * as PrismaType from "@prisma/client"
 
-// Lazy singleton — creates PrismaClient on first use
 let _prisma: PrismaClient | undefined
 
 function createClient() {
@@ -15,24 +14,19 @@ function createClient() {
     });
 }
 
-export const prisma = new Proxy({} as PrismaClient, {
-    get(_target, prop) {
-        if (!_prisma) {
-            _prisma = createClient();
-        }
-        return (_prisma as any)[prop];
-    },
-    set(_target, prop, value) {
-        if (!_prisma) {
-            _prisma = createClient();
-        }
-        (_prisma as any)[prop] = value;
-        return true;
-    },
-}) as PrismaClient;
+// In development / serverless, wrap the prisma instance so it is recreated
+// per request rather than shared across requests (Turbopack + Vercel compat).
+export const prisma =
+    process.env.NODE_ENV === 'production' || typeof global !== 'undefined'
+        ? (globalThis as any).__prisma ?? (() => {
+              const c = createClient();
+              (globalThis as any).__prisma = c;
+              return c;
+          })()
+        : createClient();
 
 if (process.env.NODE_ENV !== 'production') {
-    (globalThis as any).prisma = _prisma;
+    (globalThis as any).__prisma = _prisma;
 }
 
 export type { PrismaType }
