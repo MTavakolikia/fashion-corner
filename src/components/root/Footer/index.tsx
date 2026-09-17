@@ -1,171 +1,234 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import Image from "next/image"
-import { Facebook, Instagram, Twitter, Youtube, MapPin, Phone, Mail } from "lucide-react"
-import Visa from "./images/visa.svg"
-import Mastercard from "./images/mastercard.svg"
-import Paypal from "./images/paypal.svg"
-import ApplePay from "./images/apple-pay.svg"
-import GooglePay from "./images/google-pay.svg"
+import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
+import {
+    MapPin, Phone, Mail,
+    Truck, ShieldCheck, RotateCcw, Globe, ArrowUp,
+    Link as LinkIcon,
+} from "lucide-react";
+import Visa from "./images/visa.svg";
+import Mastercard from "./images/mastercard.svg";
+import Paypal from "./images/paypal.svg";
+import ApplePay from "./images/apple-pay.svg";
+import GooglePay from "./images/google-pay.svg";
+import { ShimmerButton } from "@/components/magicui/shimmer-button";
+import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
+import { BlurFade } from "@/components/magicui/blur-fade";
+import { DotPattern } from "@/components/magicui/dot-pattern";
+
 const footerLinks = {
     shop: [
         { name: "Women's Fashion", href: "/categories/womens" },
-        { name: "Men's Fashion", href: "/categories/mens" },
-        { name: "Kids & Baby", href: "/categories/kids" },
-        { name: "Accessories", href: "/categories/accessories" },
-        { name: "New Arrivals", href: "/new-arrivals" },
-        { name: "Sale", href: "/sale" },
+        { name: "Men's Fashion",   href: "/categories/mens" },
+        { name: "Kids & Baby",     href: "/categories/kids" },
+        { name: "Accessories",     href: "/categories/accessories" },
+        { name: "New Arrivals",    href: "/new-arrivals" },
+        { name: "Sale",            href: "/sale" },
     ],
     help: [
-        { name: "Customer Service", href: "/help/customer-service" },
-        { name: "Track Order", href: "/help/track-order" },
-        { name: "Return & Exchange", href: "/help/returns" },
-        { name: "Shipping Info", href: "/help/shipping" },
-        { name: "FAQ", href: "/help/faq" },
-        { name: "Size Guide", href: "/help/size-guide" },
+        { name: "FAQ",                 href: "/faq" },
+        { name: "Shipping Info",       href: "/shipping" },
+        { name: "Returns & Exchanges", href: "/returns" },
+        { name: "Size Guide",          href: "/faq" },
+        { name: "Track Your Order",    href: "/account/orders" },
+        { name: "Contact Us",          href: "/contact" },
     ],
-    about: [
-        { name: "About Us", href: "/about" },
-        { name: "Careers", href: "/careers" },
-        { name: "Press", href: "/press" },
-        { name: "Blog", href: "/blog" },
-        { name: "Contact Us", href: "/contact" },
+    company: [
+        { name: "About Us",          href: "/about" },
+        { name: "Privacy Policy",    href: "/privacy" },
+        { name: "Terms of Service",  href: "/terms" },
+        { name: "Careers",           href: "/about" },
     ],
-}
+};
 
 const paymentMethods = [
-    { name: "Visa", image: Visa },
-    { name: "Mastercard", image: Mastercard },
-    { name: "PayPal", image: Paypal },
-    { name: "Apple Pay", image: ApplePay },
-    { name: "Google Pay", image: GooglePay },
-]
+    { name: "Visa",        image: Visa },
+    { name: "Mastercard",  image: Mastercard },
+    { name: "PayPal",      image: Paypal },
+    { name: "Apple Pay",   image: ApplePay },
+    { name: "Google Pay",  image: GooglePay },
+];
+
+const socialLinks = [
+    { label: "Facebook", href: "#" },
+    { label: "Instagram", href: "#" },
+    { label: "Twitter", href: "#" },
+    { label: "LinkedIn", href: "#" },
+];
 
 export function Footer() {
+    const [email, setEmail] = useState("");
+    const [subscribed, setSubscribed] = useState(false);
+    const handleSubscribe = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (email.trim()) setSubscribed(true);
+    };
+
     return (
-        <footer className="bg-gray-50 dark:bg-gray-900/50 border-t">
-            <div className="mx-auto max-w-7xl px-4 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">Fashion Corner</h3>
-                        <p className="text-sm text-muted-foreground">
-                            Your one-stop destination for trendy fashion and accessories.
+        <footer className="bg-gray-950 text-white">
+            {/* Features strip */}
+            <div className="border-b border-white/10">
+                <div className="max-w-7xl mx-auto px-4 py-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {[
+                            { icon: Truck,  label: "Free Shipping", sub: "On orders over $50" },
+                            { icon: ShieldCheck, label: "Secure Payment", sub: "100% protected checkout" },
+                            { icon: RotateCcw, label: "Easy Returns", sub: "30-day return policy" },
+                            { icon: Globe,  label: "Worldwide", sub: "Ship to 50+ countries" },
+                        ].map(f => (
+                            <div key={f.label} className="flex items-center gap-2.5">
+                                <f.icon className="w-5 h-5 text-primary shrink-0" />
+                                <div>
+                                    <p className="text-sm font-medium">{f.label}</p>
+                                    <p className="text-[11px] text-white/50">{f.sub}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Main footer */}
+            <div className="max-w-7xl mx-auto px-4 py-12">
+                <BlurFade inView>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+
+                    {/* Brand column */}
+                    <div className="lg:col-span-2 space-y-4">
+                        <div className="flex items-center gap-2.5">
+                            <Image src="/images/fashion-corner.png" alt="logo" width={36} height={33} />
+                            <span className="text-xl font-bold tracking-tight">Fashion Corner</span>
+                        </div>
+                        <p className="text-sm text-white/60 leading-relaxed max-w-sm">
+                            Your premium destination for trendy, timeless fashion. Curated collections from the world&apos;s most iconic brands and emerging designers.
                         </p>
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <MapPin className="h-4 w-4" />
-                                <span>123 Fashion Street, Style City</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <Phone className="h-4 w-4" />
-                                <span>+1 234 567 890</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <Mail className="h-4 w-4" />
-                                <span>contact@fashioncorner.com</span>
-                            </div>
+                        <div className="space-y-2 text-sm text-white/60">
+                            <div className="flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" /><span>123 Fashion Street, Style City</span></div>
+                            <div className="flex items-center gap-2"><Phone className="w-4 h-4 text-primary" /><span>+1 234 567 890</span></div>
+                            <div className="flex items-center gap-2"><Mail className="w-4 h-4 text-primary" /><span>support@fashioncorner.com</span></div>
+                        </div>
+                        {/* Social */}
+                        <div className="flex gap-2 pt-1">
+                            {socialLinks.map(s => (
+                                <a key={s.label} href={s.href} aria-label={s.label} title={s.label}
+                                    className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors text-white/70 hover:text-white">
+                                    <span className="text-xs font-bold">{s.label[0]}</span>
+                                </a>
+                            ))}
                         </div>
                     </div>
 
+                    {/* Shop */}
                     <div>
-                        <h3 className="text-lg font-semibold mb-4">Shop</h3>
-                        <ul className="space-y-2">
-                            {footerLinks.shop.map((link) => (
-                                <li key={link.name}>
-                                    <Link
-                                        href={link.href}
-                                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                                    >
-                                        {link.name}
-                                    </Link>
+                        <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">Shop</h3>
+                        <ul className="space-y-2.5">
+                            {footerLinks.shop.map(l => (
+                                <li key={l.name}>
+                                    <Link href={l.href} className="text-sm text-white/60 hover:text-white transition-colors">{l.name}</Link>
                                 </li>
                             ))}
                         </ul>
                     </div>
 
+                    {/* Help */}
                     <div>
-                        <h3 className="text-lg font-semibold mb-4">Help</h3>
-                        <ul className="space-y-2">
-                            {footerLinks.help.map((link) => (
-                                <li key={link.name}>
-                                    <Link
-                                        href={link.href}
-                                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                                    >
-                                        {link.name}
-                                    </Link>
+                        <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">Help</h3>
+                        <ul className="space-y-2.5">
+                            {footerLinks.help.map(l => (
+                                <li key={l.name}>
+                                    <Link href={l.href} className="text-sm text-white/60 hover:text-white transition-colors">{l.name}</Link>
                                 </li>
                             ))}
                         </ul>
                     </div>
 
+                    {/* Company */}
                     <div>
-                        <h3 className="text-lg font-semibold mb-4">About</h3>
-                        <ul className="space-y-2">
-                            {footerLinks.about.map((link) => (
-                                <li key={link.name}>
-                                    <Link
-                                        href={link.href}
-                                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                                    >
-                                        {link.name}
-                                    </Link>
+                        <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">Company</h3>
+                        <ul className="space-y-2.5">
+                            {footerLinks.company.map(l => (
+                                <li key={l.name}>
+                                    <Link href={l.href} className="text-sm text-white/60 hover:text-white transition-colors">{l.name}</Link>
                                 </li>
                             ))}
                         </ul>
                     </div>
                 </div>
-
-                <div className="border-t border-gray-200 dark:border-gray-800 pt-8">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div className="flex gap-4">
-                            <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                                <Facebook className="h-5 w-5" />
-                            </Link>
-                            <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                                <Instagram className="h-5 w-5" />
-                            </Link>
-                            <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                                <Twitter className="h-5 w-5" />
-                            </Link>
-                            <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                                <Youtube className="h-5 w-5" />
-                            </Link>
+                </BlurFade>
+            </div>
+            <div className="border-t border-white/10 relative overflow-hidden">
+                <DotPattern
+                    width={24}
+                    height={24}
+                    className="opacity-20 text-white [mask-image:radial-gradient(500px_circle_at_50%_50%,white,transparent)]"
+                />
+                <div className="max-w-7xl mx-auto px-4 py-8 relative">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div>
+                            <span className="inline-block rounded-full border border-white/10 bg-white/5 px-3 py-0.5 mb-2 text-xs text-white/70">
+                                <AnimatedShinyText className="text-white/70 dark:text-white/70">
+                                    Never miss a drop
+                                </AnimatedShinyText>
+                            </span>
+                            <h3 className="font-semibold text-base">Stay in the loop</h3>
+                            <p className="text-sm text-white/50 mt-0.5">Get updates on new arrivals, exclusive offers, and more.</p>
                         </div>
-
-                        <div className="flex items-center gap-3">
-                            <span className="text-sm text-muted-foreground">Payment Methods:</span>
-                            <div className="flex gap-2">
-                                {paymentMethods.map((method) => (
-                                    <div key={method.name} className="relative w-12 h-8 bg-white rounded-md">
-                                        <Image
-                                            src={method.image}
-                                            alt={method.name}
-                                            fill
-                                            className="object-contain"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        {subscribed ? (
+                            <p className="text-sm text-green-400 font-medium">Thanks for subscribing! 🎉</p>
+                        ) : (
+                            <form onSubmit={handleSubscribe} className="flex gap-2 w-full md:w-auto">
+                                <input type="email" required placeholder="Enter your email" value={email} onChange={e => setEmail(e.target.value)}
+                                    className="flex-1 md:w-64 px-4 py-2.5 rounded-lg bg-white/10 border border-white/10 text-sm text-white placeholder:text-white/40 outline-none focus:border-primary transition-colors"
+                                />
+                                <ShimmerButton
+                                    type="submit"
+                                    className="px-5 py-2.5 text-sm font-medium whitespace-nowrap"
+                                    shimmerColor="#ffaa40"
+                                    background="rgba(156, 64, 255, 1)"
+                                >
+                                    Subscribe
+                                </ShimmerButton>
+                            </form>
+                        )}
                     </div>
                 </div>
+            </div>
 
-                <div className="border-t border-gray-200 dark:border-gray-800 mt-8 pt-8">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-                        <p>© 2025 Fashion Corner. All rights reserved.</p>
-                        <div className="flex gap-4">
-                            <Link href="/privacy" className="hover:text-foreground transition-colors">
-                                Privacy Policy
-                            </Link>
-                            <Link href="/terms" className="hover:text-foreground transition-colors">
-                                Terms of Service
-                            </Link>
+            {/* Bottom bar */}
+            <div className="border-t border-white/10">
+                <div className="max-w-7xl mx-auto px-4 py-5">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <p className="text-sm text-white/40">© {new Date().getFullYear()} Fashion Corner. All rights reserved.</p>
+
+                        <div className="flex items-center gap-4">
+                            {/* Payment icons */}
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs text-white/30">Pay with:</span>
+                                <div className="flex gap-1.5">
+                                    {paymentMethods.map(m => (
+                                        <div key={m.name} className="relative w-10 h-6 bg-white rounded overflow-hidden">
+                                            <Image src={m.image} alt={m.name} fill className="object-contain p-0.5" />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 text-xs text-white/40">
+                                <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+                                <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Back to top */}
+            <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                className="fixed bottom-20 md:bottom-6 right-6 w-10 h-10 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center hover:opacity-90 transition-all z-40">
+                <ArrowUp className="w-5 h-5" />
+            </button>
         </footer>
-    )
-} 
+    );
+}
