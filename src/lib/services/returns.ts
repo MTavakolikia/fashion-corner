@@ -33,7 +33,9 @@ export async function requestReturn(params: {
         throw new ApiError(ERROR_CODES.CONFLICT, "A return is already pending for this order.", 409);
     }
 
-    const itemMap = new Map(order.items.map((i) => [i.id, i]));
+    const itemMap = new Map<string, (typeof order.items)[number]>(
+        order.items.map((i) => [i.id, i])
+    );
     let refundAmount = 0;
     for (const req of params.items) {
         const item = itemMap.get(req.itemId);
@@ -56,6 +58,7 @@ export async function requestReturn(params: {
                 reason: params.reason,
                 description: params.description ?? null,
                 refundAmount: Math.round(refundAmount * 100) / 100,
+                updatedAt: new Date(),
             },
         });
         await tx.order.update({ where: { id: order.id }, data: { status: "RETURN_REQUESTED" } });
@@ -113,6 +116,7 @@ export async function processReturn(params: {
                     method: "ORIGINAL",
                     processedBy: params.actorId,
                     processedAt: new Date(),
+                    updatedAt: new Date(),
                 },
             });
 
@@ -212,6 +216,7 @@ export async function createRefund(params: {
                 note: params.note ?? null,
                 processedBy: params.actorId,
                 processedAt: new Date(),
+                updatedAt: new Date(),
             },
         });
         const sum = await tx.refund.aggregate({

@@ -51,7 +51,9 @@ export async function createOrder(input: CreateOrderInput): Promise<order> {
         where: { id: { in: input.items.map((i) => i.productId) }, status: "PUBLISHED" },
         select: { id: true, title: true, price: true, stock: true, sellerId: true, lowStockThreshold: true },
     });
-    const productMap = new Map(products.map((p) => [p.id, p]));
+    const productMap = new Map<string, { id: string; title: string; price: number; stock: number; sellerId: string | null; lowStockThreshold: number }>(
+        products.map((p) => [p.id, p])
+    );
     for (const item of input.items) {
         const p = productMap.get(item.productId);
         if (!p) {

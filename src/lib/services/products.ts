@@ -208,7 +208,7 @@ export async function createProduct(input: z.infer<typeof createProductSchema>, 
                 image: input.images[0] || null,
                 stock: input.stock,
                 lowStockThreshold: input.lowStockThreshold,
-                weight: input.weight ?? null,
+                weight: input.weight ?? 0,
                 specifications: (input.specifications ?? {}) as Prisma.InputJsonValue,
                 tags: JSON.stringify(input.tags ?? []),
                 seoTitle: input.seoTitle ?? null,
@@ -505,7 +505,9 @@ export async function sellerSeries(sellerId: string, range: RangeKey, from?: Dat
         GROUP BY 1
         ORDER BY 1
     `;
-    const map = new Map(rows.map((r) => [r.day, r]));
+    const map = new Map<string, { day: string; revenue: number; orders: number }>(
+        rows.map((r) => [r.day, r])
+    );
     const series: { day: string; revenue: number; orders: number }[] = [];
     for (let i = days - 1; i >= 0; i--) {
         const d = new Date(start);
@@ -539,7 +541,9 @@ export async function topSellerProducts(sellerId: string, range: RangeKey, from?
         where: { id: { in: rows.map((r) => r.productId) } },
         select: { id: true, title: true, image: true, mainImage: true, slug: true },
     });
-    const byId = new Map(products.map((p) => [p.id, p]));
+    const byId = new Map<string, { id: string; title: string; image: string | null; mainImage: string | null; slug: string | null }>(
+        products.map((p) => [p.id, p])
+    );
     return rows.map((r) => ({
         product: byId.get(r.productId) ?? null,
         quantity: r.quantity,
@@ -568,7 +572,9 @@ export async function sellerCustomers(sellerId: string, range: RangeKey, from?: 
         where: { id: { in: rows.map((r) => r.userId) } },
         select: { id: true, name: true, email: true },
     });
-    const byId = new Map(users.map((u) => [u.id, u]));
+    const byId = new Map<string, { id: string; name: string | null; email: string | null }>(
+        users.map((u) => [u.id, u])
+    );
     return rows.map((r) => ({
         id: r.userId,
         name: byId.get(r.userId)?.name ?? "Customer",
