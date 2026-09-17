@@ -1,7 +1,9 @@
 "use client";
 
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
+import { MagicCard } from '@/components/magicui/magic-card';
+import { ShimmerButton } from '@/components/magicui/shimmer-button';
+import { NumberTicker } from '@/components/magicui/number-ticker';
 
 interface OrderSummaryProps {
     items: Array<{
@@ -18,7 +20,14 @@ interface OrderSummaryProps {
 
 export function OrderSummary({ items, totalPrice, onSubmit, isSubmitting }: OrderSummaryProps) {
     return (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow sticky top-4">
+        <MagicCard
+            mode="gradient"
+            gradientFrom="#ffaa40"
+            gradientTo="#9c40ff"
+            gradientOpacity={0.1}
+            gradientSize={260}
+            className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow sticky top-4"
+        >
             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
 
             <div className="space-y-4 mb-6">
@@ -29,6 +38,7 @@ export function OrderSummary({ items, totalPrice, onSubmit, isSubmitting }: Orde
                                 src={item.image}
                                 alt={item.title}
                                 fill
+                                sizes="80px"
                                 className="object-cover rounded"
                             />
                         </div>
@@ -37,8 +47,9 @@ export function OrderSummary({ items, totalPrice, onSubmit, isSubmitting }: Orde
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 Quantity: {item.quantity}
                             </p>
-                            <p className="font-medium">
-                                ${(item.price * item.quantity).toFixed(2)}
+                            <p className="font-medium inline-flex items-center">
+                                <span>$</span>
+                                <NumberTicker value={item.price * item.quantity} decimalPlaces={2} className="font-medium text-foreground" />
                             </p>
                         </div>
                     </div>
@@ -60,13 +71,15 @@ export function OrderSummary({ items, totalPrice, onSubmit, isSubmitting }: Orde
                 </div>
             </div>
 
-            <Button
-                className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-6 text-lg"
+            <ShimmerButton
+                className="w-full mt-6 py-4 text-base font-semibold disabled:opacity-50"
                 onClick={onSubmit}
                 disabled={isSubmitting}
+                shimmerColor="#ffaa40"
+                background="rgba(156, 64, 255, 1)"
             >
                 {isSubmitting ? 'Placing Order...' : 'Place Order'}
-            </Button>
-        </div>
+            </ShimmerButton>
+        </MagicCard>
     );
-} 
+}

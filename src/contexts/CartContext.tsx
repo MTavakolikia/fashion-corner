@@ -30,8 +30,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const savedCart = localStorage.getItem('cart');
         if (savedCart) {
-            setItems(JSON.parse(savedCart));
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+                setItems(JSON.parse(savedCart));
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Save cart to localStorage whenever it changes
