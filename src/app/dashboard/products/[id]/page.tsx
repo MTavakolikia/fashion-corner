@@ -21,5 +21,5 @@ export default async function ProductPage({
 }) {
     const { id } = await params
     const product = await getProduct(id);
-    return <ProductDetails product={product} />;
+    return <ProductDetails product={{ ...product, image: product.image ?? product.mainImage ?? "", description: product.description ?? "", slug: product.slug ?? undefined, brand: product.brand ?? undefined, specifications: product.specifications as any, stock: product.stock, tags: product.tags ?? undefined }} />;
 } 
