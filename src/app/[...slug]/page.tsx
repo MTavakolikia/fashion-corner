@@ -5,14 +5,15 @@ import { PageHero } from "@/components/shared/PageHero";
 import { BlurFade } from "@/components/magicui/blur-fade";
 
 export async function generateMetadata(
-    { params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<Record<string, string>> },
+    { params, searchParams }: { params: Promise<{ slug: string | string[] }>; searchParams: Promise<Record<string, string>> },
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     const h = await headers();
     const host = h.get("host") ?? "";
     const url = `https://${host}`;
     const prev = await parent;
-    const slug = (await searchParams).slug ?? ((await params).slug ?? "");
+    const rawSlug = (await searchParams).slug ?? ((await params).slug ?? "");
+    const slug = Array.isArray(rawSlug) ? (rawSlug[0] ?? "") : (typeof rawSlug === "string" ? rawSlug : "");
     const title = slug ? `${slug.charAt(0).toUpperCase() + slug.slice(1)} — Fashion Corner` : "Fashion Corner";
 
     return {
@@ -24,8 +25,9 @@ export async function generateMetadata(
     };
 }
 
-export default async function Page({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<Record<string, string>> }) {
-    const slug = (await searchParams).slug ?? ((await params).slug ?? "");
+export default async function Page({ params, searchParams }: { params: Promise<{ slug: string | string[] }>; searchParams: Promise<Record<string, string>> }) {
+    const rawSlug = (await searchParams).slug ?? ((await params).slug ?? "");
+    const slug = Array.isArray(rawSlug) ? (rawSlug[0] ?? "") : (typeof rawSlug === "string" ? rawSlug : "");
     const titles: Record<string, string> = {
         privacy: "Privacy Policy",
         terms: "Terms of Service",
@@ -47,7 +49,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
                 <h3>Data Security</h3>
                 <p>We implement industry-standard security measures to protect your personal information.</p>
                 <h3>Contact</h3>
-                <p>For privacy concerns, email us at privacy@fashioncorner.com.</p>
+                <p>For privacy concerns, email us at mohammadtavakolikia66@gmail.com.</p>
             </div>
         ),
         terms: (
@@ -93,9 +95,8 @@ export default async function Page({ params, searchParams }: { params: Promise<{
         contact: (
             <div className="space-y-4">
                 <h2>Contact Us</h2>
-                <p><strong>Email:</strong> support@fashioncorner.com</p>
-                <p><strong>Phone:</strong> +1 (234) 567-890</p>
-                <p><strong>Address:</strong> 123 Fashion Street, Style City, SC 12345</p>
+                <p><strong>Email:</strong> mohammadtavakolikia66@gmail.com</p>
+                <p><strong>Web:</strong> https://mohammadtavakolikia.ir</p>
                 <p><strong>Hours:</strong> Monday–Friday, 9 AM – 6 PM EST</p>
             </div>
         ),
