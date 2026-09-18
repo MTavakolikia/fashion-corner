@@ -42,7 +42,7 @@ function CategoriesIcon() {
         },
         {
             title: "Kids & Baby",
-            href: "/categories/kids",
+            href: "/categories/kids-baby",
             icon: KidsCategoryIcon,
             color: "from-yellow-400 to-orange-500",
             gradientFrom: "#facc15",

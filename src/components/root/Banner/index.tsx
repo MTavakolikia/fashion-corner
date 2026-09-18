@@ -94,7 +94,7 @@ export function Banner() {
                                             alt={slide.title}
                                             fill
                                             sizes="400px"
-                                            className="object-cover rounded-t-full"
+                                            className="object-cover rounded-2xl"
                                             priority={index === 0}
                                         />
                                     </BlurFade>
