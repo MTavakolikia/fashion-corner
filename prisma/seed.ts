@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
+import { hashSeed, resolveProductImage, readNameToImageMap, ensureCategoryPool } from './lib/unsplash-images';
+import { pickUnsplashForProduct, buildUnsplashImageUrl } from '../src/lib/unsplash-images';
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL ?? '' });
 const prisma = new PrismaClient({ adapter });
@@ -185,21 +187,8 @@ const PRODUCT_TEMPLATES: Record<string, { names: Array<() => string>; imageSeed:
   },
 };
 
-const IMAGE_BASES: Record<string, string> = {
-  womens: "women,fashion,clothing,dress,top",
-  mens: "men,fashion,clothing,style",
-  "kids-baby": "kids,baby,clothing,fashion",
-  accessories: "accessories,fashion,jewelry,watches",
-  shoes: "shoes,sneakers,footwear,fashion",
-  sportswear: "sportswear,activewear,fitness,gym",
-  luxury: "luxury,fashion,designer,high-end",
-  bags: "handbag,bag,fashion,leather",
-  swimwear: "swimsuit,bikini,beach,summer",
-  lingerie: "lingerie,intimates,sleepwear",
-  "formal-wear": "formal,wedding,gala,evening",
-  outerwear: "coat,jacket,outerwear,winter",
-};
-
+// ──────────────────────────────────────────────────────────────
+//  SEED FUNCTION
 // ──────────────────────────────────────────────────────────────
 //  SEED FUNCTION
 // ──────────────────────────────────────────────────────────────
@@ -213,6 +202,23 @@ async function seedProducts() {
       create: { slug: cat.slug, name: cat.name, description: cat.desc, updatedAt: new Date(), createdAt: new Date() },
     });
   }
+
+  console.log("🖼️  Resolving Unsplash product images...");
+  const unsplashNameIndex = readNameToImageMap();
+  const unsplashCategoryPool = await ensureCategoryPool(CATEGORIES.map(c => c.slug));
+  const exactMatches = Object.keys(unsplashNameIndex).length;
+  const pooled = Object.keys(unsplashCategoryPool).filter(k => (unsplashCategoryPool[k] ?? []).length > 0).length;
+  console.log(`   ✅ ${exactMatches} exact name-matched images ready, ${pooled}/${CATEGORIES.length} category image pools ready`);
+
+  const resolveGallery = (title: string, category: string, seed: number): string[] => {
+    const main = resolveProductImage(title, category, seed, unsplashNameIndex, unsplashCategoryPool).mainImage;
+    const gallery = [main];
+    for (let i = 1; i < 3; i++) {
+      const curated = pickUnsplashForProduct(category, title, seed + i * 5);
+      gallery.push(buildUnsplashImageUrl(curated.id, { w: 800, h: 1000 }));
+    }
+    return Array.from(new Set(gallery));
+  };
 
   const now = new Date();
 
@@ -280,10 +286,12 @@ async function seedProducts() {
       const status = statusRoll > 0.08 ? "PUBLISHED" : statusRoll > 0.04 ? "DRAFT" : "ARCHIVED";
       const brand = pick(BRANDS);
 
-       // Build a real unsplash search URL based on category
-       const seedKeywords = IMAGE_BASES[cat.slug] ?? "fashion";
-       const photoId = randInt(100000, 999999);
-       const mainImage = `https://images.unsplash.com/photo-${photoId}?w=600&h=600&fit=crop&auto=format&q=80`;
+       // Real Unsplash image — matched to the product name (see prisma/lib/unsplash-images.ts)
+       const imageSeed = hashSeed(id);
+       const productImage = resolveProductImage(title, cat.slug, imageSeed, unsplashNameIndex, unsplashCategoryPool);
+       const mainImage = productImage.mainImage;
+       const image = productImage.image;
+       const gallery = resolveGallery(title, cat.slug, imageSeed);
 
       await prisma.product.upsert({
         where: { id },
@@ -304,7 +312,8 @@ async function seedProducts() {
           publishedAt,
           tags: JSON.stringify(tagsArr),
           mainImage,
-          image: mainImage,
+          image,
+          images: JSON.stringify(gallery),
           updatedAt: now,
         },
         create: {
@@ -325,7 +334,8 @@ async function seedProducts() {
           publishedAt,
           tags: JSON.stringify(tagsArr),
           mainImage,
-          image: mainImage,
+          image,
+          images: JSON.stringify(gallery),
           createdAt: now,
           updatedAt: now,
         },
