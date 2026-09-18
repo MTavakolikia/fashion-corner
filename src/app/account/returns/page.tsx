@@ -52,7 +52,7 @@ export default async function ReturnsPage() {
                                         {ret.refundAmount > 0 && ` آ· Refund: $${ret.refundAmount.toFixed(2)}`}
                                     </p>
                                 </div>
-                                <span className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize ${STATUS_COLORS[ret.status] ?? "bg-gray-100"}`}>
+                                <span className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize ${STATUS_COLORS[ret.status] ?? "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"}`}>
                                     {STATUS_LABELS[ret.status] ?? ret.status}
                                 </span>
                             </div>
