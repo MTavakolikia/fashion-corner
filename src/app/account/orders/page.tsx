@@ -71,7 +71,7 @@ function OrderCard({ order }: { order: any }) {
                     </p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize ${statusStyles[order.status] ?? "bg-gray-100 text-gray-800"}`}>
+                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize ${statusStyles[order.status] ?? "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"}`}>
                         {order.status.replace("_", " ")}
                     </span>
                     <span className="font-semibold text-gray-900 dark:text-white">${order.total.toFixed(2)}</span>
