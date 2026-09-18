@@ -99,7 +99,7 @@ function StatusBadge({ status }: { status: string }) {
         CANCELLED: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
     };
     return (
-        <span className={`px-2 py-0.5 rounded text-xs capitalize ${colors[status] || 'bg-gray-100 text-gray-800'}`}>
+        <span className={`px-2 py-0.5 rounded text-xs capitalize ${colors[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'}`}>
             {status.toLowerCase()}
         </span>
     );
