@@ -17,6 +17,8 @@ const isPublic = createRouteMatcher([
     "/privacy",
     "/shipping",
     "/returns",
+    "/careers",
+    "/size-guide",
     "/sitemap.xml",
     "/robots.txt",
     "/api/products(.*)",
