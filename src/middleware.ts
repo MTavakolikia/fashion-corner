@@ -1,78 +1,20 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { clerkMiddleware, ClerkMiddlewareAuth } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
 
-const isPublic = createRouteMatcher([
-    "/",
-    "/products(.*)",
-    "/categories/(.*)",
-    "/brands/(.*)",
-    "/new-arrivals",
-    "/sale",
-    "/sign-in(.*)",
-    "/sign-up(.*)",
-    "/about",
-    "/contact",
-    "/faq",
-    "/terms",
-    "/privacy",
-    "/shipping",
-    "/returns",
-    "/careers",
-    "/size-guide",
-    "/sitemap.xml",
-    "/robots.txt",
-    "/api/products(.*)",
-    "/api/reviews(.*)",
-    "/api/wishlist(.*)",
-    "/api/categories(.*)",
-    "/api/brands(.*)",
-    "/api/import-products",
-    "/api/catalog(.*)",
-    "/_next(.*)",
-    "/favicon.ico",
-    "/images(.*)",
-    "/static(.*)",
-]);
-
-const isProtectedCustomer = createRouteMatcher(["/account(.*)", "/checkout(.*)"]);
-const isProtectedSeller = createRouteMatcher(["/dashboard/seller(.*)"]);
-const isProtectedAdmin = createRouteMatcher(["/dashboard/admin(.*)"]);
-
-export default clerkMiddleware(async (auth, req) => {
+export default clerkMiddleware(async (auth: ClerkMiddlewareAuth, req: NextRequest) => {
     const { userId } = await auth();
     const url = new URL(req.url);
+    const pathname = url.pathname;
 
     // Redirect authenticated users away from auth pages
-    if (userId && (url.pathname.startsWith("/sign-in") || url.pathname.startsWith("/sign-up"))) {
+    if (userId && (pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up"))) {
         return NextResponse.redirect(new URL("/", req.url));
     }
 
-    // Public routes bypass protection
-    if (isPublic(req)) return;
-
-    // Customer routes require auth
-    if (isProtectedCustomer(req)) {
-        if (!userId) return NextResponse.redirect(new URL("/sign-in", req.url));
-        return;
-    }
-
-    // Seller routes require auth + seller role
-    if (isProtectedSeller(req)) {
-        if (!userId) return NextResponse.redirect(new URL("/sign-in", req.url));
-        // Role check happens in API routes; dashboard pages use server components
-        return;
-    }
-
-    // Admin routes require auth + admin role
-    if (isProtectedAdmin(req)) {
-        if (!userId) return NextResponse.redirect(new URL("/sign-in", req.url));
-        return;
-    }
-
-    // All other routes under /dashboard and /account require auth
-    if (!userId) {
-        return NextResponse.redirect(new URL("/sign-in", req.url));
-    }
+    // All other auth checks are handled resource-based via getAuthedUser() in
+    // each page, layout, API route, or Server Function that accesses protected data.
+    // Middleware-based path matching via createRouteMatcher is deprecated.
+    return;
 });
 
 export const config = {
