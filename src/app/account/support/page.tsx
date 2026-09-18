@@ -62,7 +62,7 @@ function TicketRow({ ticket }: { ticket: any }) {
                     </p>
                     <p className="text-sm text-gray-700 dark:text-gray-300 mt-2 line-clamp-2">{ticket.message}</p>
                 </div>
-                <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${statusStyles[ticket.status] ?? "bg-gray-100"}`}>
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${statusStyles[ticket.status] ?? "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"}`}>
                     {ticket.status.replace("_", " ").toLowerCase()}
                 </span>
             </div>
