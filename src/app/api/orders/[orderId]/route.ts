@@ -1,49 +1,23 @@
-import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/prisma';
+import { getAuthedUser, assertOwner } from "@/lib/auth";
+import { ok, fail, toResponse } from "@/lib/http";
+import { ERROR_CODES } from "@/lib/error-codes";
+import { getOrderTimeline } from "@/lib/services/orders";
+import type { order } from "@prisma/client";
 
-export async function GET(
-    _request: Request,
-    {
-        params,
-    }: {
-        params: Promise<{ orderId: string }>
-    }
-) {
+export const dynamic = "force-dynamic";
+
+type Ctx = { params: Promise<{ orderId: string }> };
+
+/** GET /api/orders/[orderId] — order + status timeline (owner or admin). */
+export async function GET(_req: Request, { params }: Ctx) {
     try {
-        const { userId } = await auth();
-        const { orderId } = await params
-        if (!userId) {
-            return new NextResponse('Unauthorized', { status: 401 });
-        }
-
-        const order = await prisma.order.findUnique({
-            where: {
-                id: orderId,
-                userId
-            },
-            include: {
-                items: {
-                    include: {
-                        product: {
-                            select: {
-                                title: true,
-                                image: true
-                            }
-                        }
-                    }
-                },
-                shippingAddress: true
-            }
-        });
-
-        if (!order) {
-            return new NextResponse('Order not found', { status: 404 });
-        }
-
-        return NextResponse.json(order);
-    } catch (error) {
-        console.error('[ORDER_GET]', error);
-        return new NextResponse('Internal error', { status: 500 });
+        const authed = await getAuthedUser();
+        const { orderId } = await params;
+        const result = await getOrderTimeline(orderId);
+        if (!result) return fail(ERROR_CODES.ORDER_NOT_FOUND, "Order not found.", 404);
+        assertOwner((result.order as order).userId, authed, "Order");
+        return ok(result);
+    } catch (e) {
+        return toResponse(e, "[order.get]");
     }
-} 
+}

@@ -23,8 +23,12 @@ export function BasketButton() {
             <SheetTrigger asChild>
 
                 <Button variant="outline" size="icon"> <span className="relative">
-                    <ShoppingCart />
-                    <span className="absolute -top-4 -right-4 rounded-full p-0 bg-purple-500 w-5 h-5">1</span>
+                    <ShoppingCart className="w-5 h-5" />
+                    {items.length > 0 && (
+                        <span className="absolute -top-2 -right-2 rounded-full bg-purple-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center">
+                            {items.reduce((n, i) => n + i.quantity, 0)}
+                        </span>
+                    )}
                 </span>
                 </Button>
 
@@ -42,7 +46,7 @@ export function BasketButton() {
                         <p className="text-gray-600 dark:text-gray-400 mb-8">
                             Looks like you haven&apos;t added any items to your cart yet.
                         </p>
-                        <Link href="/dashboard/products">
+                        <Link href="/products">
                             <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                                 Continue Shopping
                             </Button>

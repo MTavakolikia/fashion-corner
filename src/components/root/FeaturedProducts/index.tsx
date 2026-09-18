@@ -1,11 +1,10 @@
-
-import Image from "next/image"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import Link from "next/link";
+import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
+import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
+import { BlurFade } from "@/components/magicui/blur-fade";
+import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
+import { ProductCard } from "@/components/ProductCard";
 import { getProducts } from "@/lib/queries/products";
-
-
 
 export async function FeaturedProducts() {
     const products = await getProducts();
@@ -14,52 +13,49 @@ export async function FeaturedProducts() {
     return (
         <section className="w-full max-w-7xl mx-auto px-4 py-12">
             <div className="flex justify-between items-center mb-8">
-                <h2 className="text-3xl font-bold">Featured Products</h2>
+                <div>
+                    <BlurFade inView>
+                        <span className="inline-block rounded-full border border-purple-500/20 bg-purple-500/10 px-4 py-1 mb-3 text-purple-600 dark:text-purple-300">
+                            <AnimatedShinyText>Hand-picked for you</AnimatedShinyText>
+                        </span>
+                    </BlurFade>
+                    <h2 className="text-3xl md:text-4xl font-bold mb-2">
+                        <AnimatedGradientText
+                            colorFrom="#ffaa40"
+                            colorTo="#9c40ff"
+                            speed={1.5}
+                        >
+                            Featured Products
+                        </AnimatedGradientText>
+                    </h2>
+                    <p className="text-muted-foreground">Our hand-picked selection of the latest trends</p>
+                </div>
                 <Link href="/products">
-                    <Button variant="outline">View All</Button>
+                    <InteractiveHoverButton className="hidden md:flex">
+                        View All
+                    </InteractiveHoverButton>
                 </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {lastFourProducts?.map((product) => (
-                    <Card key={product.id} className="group">
-                        <Link href={`dashboard/products/${product.id}`}>
-                            <CardContent className="p-4">
-                                <div className="relative aspect-square overflow-hidden rounded-lg mb-4">
-                                    <Image
-                                        src={product.image}
-                                        alt={product.title}
-                                        fill
-                                        className="object-cover transition-transform group-hover:scale-105"
-                                    />
-                                    {/* {product.discount && (
-                                        <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md">
-                                            -{product.discount}%
-                                        </div>
-                                    )} */}
-                                </div>
-                                <div className="space-y-2">
-                                    <p className="text-sm text-muted-foreground">{product.category}</p>
-                                    <h3 className="font-semibold">{product.title}</h3>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-lg font-bold">${product.price}</span>
-                                        {/* {product.discount && (
-                                            <span className="text-sm text-muted-foreground line-through">
-                                                ${(product.price * (1 + product.discount / 100)).toFixed(2)}
-                                            </span>
-                                        )} */}
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Link>
-                        <CardFooter className="p-4">
-                            <Link href={`dashboard/products/${product.id}`}>
-                                <Button className="w-full">More Details</Button>
-                            </Link>
-                        </CardFooter>
-
-                    </Card>
+                {lastFourProducts?.map((product: any, index: number) => (
+                    <BlurFade key={product.id} delay={0.08 * index} inView>
+                        <ProductCard
+                            id={product.id}
+                            title={product.title}
+                            price={product.price}
+                            image={product.image ?? product.mainImage ?? ""}
+                            category={product.category}
+                            rating={product.rating}
+                            compareAtPrice={product.compareAtPrice}
+                        />
+                    </BlurFade>
                 ))}
             </div>
+            <div className="mt-8 flex justify-center md:hidden">
+                <Link href="/products">
+                    <InteractiveHoverButton>View All</InteractiveHoverButton>
+                </Link>
+            </div>
         </section>
-    )
-} 
+    );
+}

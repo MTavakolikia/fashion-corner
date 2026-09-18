@@ -1,83 +1,29 @@
-"use client";
+import { getAuthedUser } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import CheckoutFlow from "./CheckoutFlow";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useCart } from '@/contexts/CartContext';
-import { ShippingForm } from '@/components/checkout/ShippingForm';
-import { OrderSummary } from '@/components/checkout/OrderSummary';
-import { toast } from 'react-hot-toast';
-import { CreateOrderInput } from '@/lib/validations/order';
+export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ step?: string }> }) {
+    const authed = await getAuthedUser();
+    if (!authed) redirect("/sign-in");
 
-export default function CheckoutPage() {
-    const router = useRouter();
-    const { items, clearCart } = useCart();
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const params = await searchParams;
+    const step = params.step ?? "cart";
 
-    useEffect(() => {
-        if (items.length === 0) {
-            router.push('/cart');
-        }
-    }, [items, router]);
-
-    const totalPrice = items.reduce((total, item) => total + item.price * item.quantity, 0);
-
-    const handleSubmit = async (formData: CreateOrderInput['shippingAddress']) => {
-        try {
-            setIsSubmitting(true);
-
-            const response = await fetch('/api/orders', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    items: items.map(item => ({
-                        productId: item.id,
-                        quantity: item.quantity,
-                        price: item.price,
-                    })),
-                    shippingAddress: formData,
-                    total: totalPrice,
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to create order');
-            }
-
-            const order = await response.json();
-            clearCart();
-            router.push(`/orders/${order.id}`);
-            toast.success('Order placed successfully!');
-        } catch (error) {
-            console.error('Error creating order:', error);
-            toast.error('Failed to place order. Please try again.');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    if (items.length === 0) {
-        return null;
-    }
+    const addresses = await prisma.address.findMany({
+        where: { userId: authed.user.id },
+        orderBy: [{ isDefault: "desc" }, { createdAt: "desc" }],
+    });
+    const defaultAddressId = addresses.find((a) => a.isDefault)?.id ?? addresses[0]?.id;
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-8">Checkout</h1>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div>
-                    <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
-                    <ShippingForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
-                </div>
-
-                <OrderSummary
-                    items={items}
-                    totalPrice={totalPrice}
-                    onSubmit={() => { }}
-                    isSubmitting={isSubmitting}
-                />
-            </div>
-        </div>
+        <CheckoutFlow
+            initialStep={step}
+            savedAddresses={addresses}
+            defaultAddressId={defaultAddressId}
+            userId={authed.user.id}
+            userEmail={authed.user.email}
+            userName={authed.user.name ?? undefined}
+        />
     );
-} 
+}

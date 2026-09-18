@@ -73,7 +73,7 @@ export function Navigation() {
                     className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
                     href="/categories"
                   >
-                    <Image src="/images/fashion-corner.png" alt="logo" width={33} height={30} />
+                    <Image src="/images/fashion-corner.png" alt="logo" width={33} height={30} className="shrink-0" />
                     <div className="mb-2 mt-4 text-lg font-medium">
                       Fashion Categories
                     </div>
@@ -112,18 +112,14 @@ export function Navigation() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="/new-arrivals" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              New Arrivals
-            </NavigationMenuLink>
-          </Link>
+          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                          <Link href="/new-arrivals">New Arrivals</Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="/sale" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Sale
-            </NavigationMenuLink>
-          </Link>
+          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+            <Link href="/sale">Sale</Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

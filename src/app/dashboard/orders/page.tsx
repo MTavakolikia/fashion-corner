@@ -1,181 +1,106 @@
-"use client";
-
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
+import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { formatDate } from '@/lib/utils';
-import { OrderStatus } from '@prisma/client';
+import { DashboardShell } from '@/components/dashboard/DashboardShell';
+import { AnimatedGradientText } from '@/components/magicui/animated-gradient-text';
+import { MagicCard } from '@/components/magicui/magic-card';
 
-interface OrderItem {
+interface OrderRow {
     id: string;
-    quantity: number;
-    price: number;
-    product: {
-        id: string;
-        title: string;
-        image: string;
-    };
-}
-
-interface Order {
-    id: string;
-    status: OrderStatus;
+    userId: string;
+    status: string;
     total: number;
-    createdAt: string;
-    items: OrderItem[];
-    shippingAddress: {
-        fullName: string;
-        address: string;
-        city: string;
-        state: string;
-        zipCode: string;
-    };
+    createdAt: Date;
+    itemCount: number;
+    shippingName: string;
 }
 
-export default function OrdersPage() {
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+async function getOrders(page = 1): Promise<{ orders: OrderRow[]; total: number }> {
+    const skip = (page - 1) * 20;
+    const [ordersRaw, total] = await Promise.all([
+        prisma.order.findMany({
+            skip, take: 20, orderBy: { createdAt: 'desc' },
+            include: { _count: { select: { items: true } }, shippingAddress: { select: { fullName: true } } },
+        }),
+        prisma.order.count(),
+    ]);
+    const orders = ordersRaw.map(o => ({
+        id: o.id, userId: o.userId, status: o.status, total: o.total,
+        createdAt: o.createdAt, itemCount: o._count.items, shippingName: o.shippingAddress?.fullName || 'N/A',
+    })) as OrderRow[];
+    return { orders, total };
+}
 
-    useEffect(() => {
-        fetchOrders();
-    }, []);
-
-    const fetchOrders = async () => {
-        try {
-            const response = await fetch('/api/orders');
-            if (!response.ok) {
-                throw new Error('Failed to fetch orders');
-            }
-            const data = await response.json();
-            setOrders(data);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to fetch orders');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) {
-        return (
-            <div className="container mx-auto px-4 py-16 text-center">
-                <p>Loading orders...</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="container mx-auto px-4 py-16 text-center">
-                <p className="text-red-500">{error}</p>
-                <Button
-                    onClick={fetchOrders}
-                    className="mt-4"
-                >
-                    Retry
-                </Button>
-            </div>
-        );
-    }
-
-    if (orders.length === 0) {
-        return (
-            <div className="container mx-auto px-4 py-16 text-center">
-                <h1 className="text-3xl font-bold mb-8">No Orders Yet</h1>
-                <p className="text-gray-600 dark:text-gray-400 mb-8">
-                    You haven&apos;t placed any orders yet.
-                </p>
-                <Link href="/dashboard/products">
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                        Start Shopping
-                    </Button>
-                </Link>
-            </div>
-        );
-    }
+export default async function DashboardOrdersPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+    const { page = '1' } = await searchParams;
+    const { orders, total } = await getOrders(Number(page));
+    const totalPages = Math.ceil(total / 20);
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-8">Your Orders</h1>
-
-            <div className="space-y-8">
-                {orders.map((order) => (
-                    <div
-                        key={order.id}
-                        className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden"
+        <DashboardShell title="Orders">
+            <h1 className="text-2xl font-bold mb-6">
+                <AnimatedGradientText colorFrom="#ffaa40" colorTo="#9c40ff" speed={1.5}>
+                    Orders ({total})
+                </AnimatedGradientText>
+            </h1>
+            {orders.length === 0 ? (
+                <p className="text-muted-foreground">No orders yet.</p>
+            ) : (
+                <>
+                    <MagicCard
+                        mode="gradient"
+                        gradientFrom="#ffaa40"
+                        gradientTo="#9c40ff"
+                        gradientOpacity={0.06}
+                        gradientSize={420}
+                        className="bg-card rounded-lg border overflow-hidden"
                     >
-                        <div className="p-6 border-b dark:border-gray-700">
-                            <div className="flex flex-wrap justify-between items-start gap-4">
-                                <div>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                                        Order placed on {formatDate(order.createdAt)}
-                                    </p>
-                                    <p className="text-sm">
-                                        Order ID: <span className="font-medium">{order.id}</span>
-                                    </p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-lg font-bold">
-                                        Total: ${order.total.toFixed(2)}
-                                    </p>
-                                    <span className={`inline-block px-3 py-1 rounded-full text-sm ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
-                                        order.status === 'SHIPPED' ? 'bg-blue-100 text-blue-800' :
-                                            order.status === 'PROCESSING' ? 'bg-yellow-100 text-yellow-800' :
-                                                order.status === 'CANCELLED' ? 'bg-red-100 text-red-800' :
-                                                    'bg-gray-100 text-gray-800'
-                                        }`}>
-                                        {order.status}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="p-6 border-b dark:border-gray-700">
-                            <h3 className="font-semibold mb-4">Items</h3>
-                            <div className="space-y-4">
-                                {order.items.map((item) => (
-                                    <div key={item.id} className="flex gap-4">
-                                        <div className="relative w-20 h-20">
-                                            <Image
-                                                src={item.product.image}
-                                                alt={item.product.title}
-                                                fill
-                                                className="object-cover rounded"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Link
-                                                href={`/dashboard/products/${item.product.id}`}
-                                                className="font-medium hover:text-blue-600"
-                                            >
-                                                {item.product.title}
-                                            </Link>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                Quantity: {item.quantity}
-                                            </p>
-                                            <p className="font-medium">
-                                                ${(item.price * item.quantity).toFixed(2)}
-                                            </p>
-                                        </div>
-                                    </div>
+                        <table className="w-full text-sm">
+                            <thead className="bg-accent">
+                                <tr>
+                                    <th className="text-left px-4 py-2">Order ID</th>
+                                    <th className="text-left px-4 py-2">Customer</th>
+                                    <th className="text-left px-4 py-2">Date</th>
+                                    <th className="text-center px-4 py-2">Items</th>
+                                    <th className="text-center px-4 py-2">Status</th>
+                                    <th className="text-right px-4 py-2">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {orders.map(o => (
+                                    <tr key={o.id} className="border-t hover:bg-accent/50">
+                                        <td className="px-4 py-2 font-mono text-xs">{o.id.slice(-8)}</td>
+                                        <td className="px-4 py-2">{o.shippingName}</td>
+                                        <td className="px-4 py-2 text-muted-foreground">{new Date(o.createdAt).toLocaleDateString()}</td>
+                                        <td className="px-4 py-2 text-center">{o.itemCount}</td>
+                                        <td className="px-4 py-2 text-center"><StatusBadge status={o.status} /></td>
+                                        <td className="px-4 py-2 text-right font-semibold">${o.total.toFixed(2)}</td>
+                                    </tr>
                                 ))}
-                            </div>
-                        </div>
-
-                        <div className="p-6">
-                            <h3 className="font-semibold mb-4">Shipping Address</h3>
-                            <div className="text-sm">
-                                <p>{order.shippingAddress.fullName}</p>
-                                <p>{order.shippingAddress.address}</p>
-                                <p>
-                                    {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}
-                                </p>
-                            </div>
-                        </div>
+                            </tbody>
+                        </table>
+                    </MagicCard>
+                    <div className="flex justify-center gap-2 mt-4">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+                            <Link key={n} href={`/dashboard/orders?page=${n}`} className={`px-3 py-1 rounded border text-sm ${n === Number(page) ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'}`}>{n}</Link>
+                        ))}
                     </div>
-                ))}
-            </div>
-        </div>
+                </>
+            )}
+        </DashboardShell>
     );
-} 
+}
+
+function StatusBadge({ status }: { status: string }) {
+    const colors: Record<string, string> = {
+        PENDING: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+        PROCESSING: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+        SHIPPED: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+        DELIVERED: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+        CANCELLED: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+    };
+    return (
+        <span className={`px-2 py-0.5 rounded text-xs capitalize ${colors[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'}`}>
+            {status.toLowerCase()}
+        </span>
+    );
+}

@@ -11,11 +11,12 @@ interface LogoProps {
 
 const Logo: FC<LogoProps> = ({ width, height }) => {
   return (
-    <div className="z-50" style={{ width: width, height: height }}>
+    <div className="z-50 relative" style={{ width, height }}>
       <Image
         src={LogoImg}
         alt="Fashion Corner"
-        className="w-full h-full object-cover overflow-visible"
+        fill
+        className="object-contain"
       />
     </div>
   );

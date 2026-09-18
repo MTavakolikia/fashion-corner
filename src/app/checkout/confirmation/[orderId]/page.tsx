@@ -6,6 +6,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
+import { Confetti } from '@/components/magicui/confetti';
+import { AnimatedGradientText } from '@/components/magicui/animated-gradient-text';
+import { AnimatedShinyText } from '@/components/magicui/animated-shiny-text';
+import { BlurFade } from '@/components/magicui/blur-fade';
+import { MagicCard } from '@/components/magicui/magic-card';
+import { NumberTicker } from '@/components/magicui/number-ticker';
+import { ShimmerButton } from '@/components/magicui/shimmer-button';
 
 interface OrderItem {
     id: string;
@@ -73,7 +80,7 @@ export default function OrderConfirmationPage() {
             <div className="container mx-auto px-4 py-16 text-center">
                 <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
                 <p className="text-gray-600 dark:text-gray-400 mb-8">{error}</p>
-                <Link href="/dashboard/products">
+                <Link href="/products">
                     <Button>Continue Shopping</Button>
                 </Link>
             </div>
@@ -82,15 +89,35 @@ export default function OrderConfirmationPage() {
 
     return (
         <div className="container mx-auto px-4 py-8">
+            <Confetti
+                className="pointer-events-none fixed inset-0 z-50 h-full w-full"
+                options={{ particleCount: 160, spread: 100, origin: { y: 0.6 } }}
+            />
             <div className="max-w-3xl mx-auto">
-                <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold mb-4">Order Confirmed!</h1>
+                <BlurFade inView className="text-center mb-8">
+                    <span className="inline-block rounded-full border border-green-500/20 bg-green-500/10 px-4 py-1 mb-4 text-sm text-green-600 dark:text-green-300">
+                        <AnimatedShinyText className="text-green-600 dark:text-green-300 mx-0 max-w-none">
+                            Your order is being prepared
+                        </AnimatedShinyText>
+                    </span>
+                    <h1 className="text-3xl md:text-4xl font-bold mb-4">
+                        <AnimatedGradientText colorFrom="#22c55e" colorTo="#9c40ff" speed={1.5}>
+                            Order Confirmed!
+                        </AnimatedGradientText>
+                    </h1>
                     <p className="text-gray-600 dark:text-gray-400">
-                        Thank you for your order. We`&apos;`ll send you a confirmation email shortly.
+                        Thank you for your order. We&apos;ll send you a confirmation email shortly.
                     </p>
-                </div>
+                </BlurFade>
 
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
+                <MagicCard
+                    mode="gradient"
+                    gradientFrom="#22c55e"
+                    gradientTo="#9c40ff"
+                    gradientOpacity={0.1}
+                    gradientSize={320}
+                    className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8"
+                >
                     <div className="flex justify-between items-center mb-6">
                         <div>
                             <h2 className="text-xl font-semibold">Order #{order.id}</h2>
@@ -156,16 +183,23 @@ export default function OrderConfirmationPage() {
                         </div>
                         <div className="flex justify-between font-semibold text-lg border-t border-gray-200 dark:border-gray-700 pt-4">
                             <span>Total</span>
-                            <span>${order.total.toFixed(2)}</span>
+                            <span className="inline-flex items-center">
+                                <span>$</span>
+                                <NumberTicker value={order.total} decimalPlaces={2} className="text-lg font-semibold text-foreground" />
+                            </span>
                         </div>
                     </div>
-                </div>
+                </MagicCard>
 
                 <div className="text-center">
-                    <Link href="/dashboard/products">
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                    <Link href="/products" className="inline-block">
+                        <ShimmerButton
+                            className="px-8 py-3 text-sm font-semibold"
+                            shimmerColor="#ffaa40"
+                            background="rgba(156, 64, 255, 1)"
+                        >
                             Continue Shopping
-                        </Button>
+                        </ShimmerButton>
                     </Link>
                 </div>
             </div>

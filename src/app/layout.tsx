@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import {
-  ClerkProvider,
-} from '@clerk/nextjs'
+import { ClerkProvider } from '@clerk/nextjs'
+import { auth } from "@clerk/nextjs/server";
 
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { CartProvider } from "@/contexts/CartContext";
+import { BodyCleanup } from "@/components/BodyCleanup";
+import Navbar from "@/components/root/Navbar";
+import { Footer } from "@/components/root/Footer";
+import { ScrollProgress } from "@/components/magicui/scroll-progress";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,20 +22,29 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Fashion Corner",
-  description: "Your go-to destination for trendy, timeless, and unique fashion. Discover curated styles that define you. Elevate your wardrobe effortlessly. ",
+  title: "Fashion Corner — by Mohammad Tavakoli Kia",
+  description: "Your go-to destination for trendy, timeless, and unique fashion. Discover curated styles that define you. Built by Mohammad Tavakoli Kia (mohammadtavakolikia.ir).",
+  alternates: {
+    canonical: "https://mohammadtavakolikia.ir",
+  },
+  openGraph: {
+    siteName: "Fashion Corner",
+    url: "https://mohammadtavakolikia.ir",
+  },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { userId } = await auth();
   return (
-    <ClerkProvider>
-      <html lang="en">
+    <ClerkProvider afterSignOutUrl="/">
+      <html lang="en" suppressHydrationWarning>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
+          suppressHydrationWarning
         >
           <ThemeProvider
             attribute="class"
@@ -41,9 +53,13 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <CartProvider>
-              <main>
+              <BodyCleanup />
+              <ScrollProgress className="fixed top-0 z-[70] h-0.5 bg-gradient-to-r from-orange-400 via-purple-500 to-pink-500" />
+              <Navbar userId={userId} />
+              <main className="flex-grow pt-[92px] md:pt-5 pb-16 md:pb-0">
                 {children}
               </main>
+              <Footer />
             </CartProvider>
           </ThemeProvider>
         </body>

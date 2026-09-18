@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+opencode.json
+.clerk/
+
+# generated prisma client (v7 default output)
+/app/generated/
+*.db
+
+# local uploads
+/public/uploads/
+
