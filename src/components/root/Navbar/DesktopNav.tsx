@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, Heart, ChevronDown, X } from "lucide-react";
@@ -8,6 +8,14 @@ import { ModeToggler } from "../../ModeToggler";
 import { BasketButton } from "@/components/BasketButton";
 import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
 import { RainbowButton } from "@/components/magicui/rainbow-button";
+import {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 interface DesktopNavProps {
@@ -45,101 +53,80 @@ interface DesktopNavProps {
 }
 
 export default function DesktopNav({ userId }: DesktopNavProps) {
-    const [openCat, setOpenCat] = useState(false);
-    const [openBrands, setOpenBrands] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
-
-    useEffect(() => {
-        const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { setOpenCat(false); setOpenBrands(false); setSearchOpen(false); } };
-        window.addEventListener("keydown", onKey);
-        return () => window.removeEventListener("keydown", onKey);
-    }, []);
 
     return (
         <>
             {/* Top utility bar */}
-            <div className="hidden md:flex items-center justify-between px-8 py-1.5 bg-black border-b border-white/10">
-                <div className="flex items-center gap-5 text-[11px] text-white/60">
-                    <span className="hover:text-white/90 transition-colors cursor-pointer">+1 234 567 890</span>
-                    <span className="hover:text-white/90 transition-colors cursor-pointer">support@fashioncorner.com</span>
-                </div>
+            <div className="hidden md:flex items-center justify-between px-8 py-1.5 bg-muted text-foreground border-b border-border w-full max-w-full min-w-0 overflow-hidden">
+                <a href="https://mohammadtavakolikia.ir" target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-[11px] font-medium text-primary hover:underline transition-colors">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    mohammadtavakolikia.ir — Portfolio
+                </a>
                 <span className="text-[11px] font-medium tracking-wide">
-                    <AnimatedShinyText className="text-white/80 dark:text-white/80 mx-0 max-w-none">
-                        Free shipping on orders over $50 &nbsp;✦&nbsp; New season styles available
+                    <AnimatedShinyText className="text-foreground mx-0 max-w-none">
+                        Built by Mohammad Tavakoli Kia &nbsp;✦&nbsp; React & Next.js Developer
                     </AnimatedShinyText>
                 </span>
             </div>
 
             {/* Main header */}
-            <header className="flex items-center gap-6 px-8 py-3 bg-black/95 backdrop-blur-md sticky top-0 z-50 border-b border-white/10">
+            <header className="flex items-center gap-6 px-8 py-3 bg-background/95 backdrop-blur-md sticky top-0 z-50 border-b border-border w-full max-w-full min-w-0 overflow-hidden">
                 <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-                    <Image src="/images/fashion-corner.png" alt="logo" width={32} height={30} className="shrink-0 group-hover:scale-105 transition-transform" />
-                    <span className="text-white font-bold text-lg tracking-tight hidden sm:block">Fashion Corner</span>
+                    <Image src="/images/fashion-corner.png" alt="logo" width={32} height={30} className="shrink-0 group-hover:scale-105 transition-transform" style={{ width: 'auto', height: '1.875rem' }} />
+                    <span className="text-foreground font-bold text-lg tracking-tight hidden sm:block">Fashion Corner</span>
                 </Link>
 
                 <nav className="hidden lg:flex items-center gap-0.5 ml-6">
                     {/* Categories dropdown */}
-                    <div className="relative">
-                        <button
-                            onMouseEnter={() => setOpenCat(true)}
-                            onMouseLeave={() => setOpenCat(false)}
-                            className="flex items-center gap-1 px-3 py-2 text-white/70 hover:text-white text-sm font-medium transition-colors"
-                        >
-                            Categories
-                            <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openCat && "rotate-180")} />
-                        </button>
-                        {openCat && (
-                            <>
-                                <div className="fixed inset-0 z-10" onClick={() => setOpenCat(false)} />
-                                <div className="absolute top-full left-0 z-20 w-72 bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-800 py-2 animate-in fade-in slide-in-from-top-2">
-                                    <div className="px-4 pb-2 mb-1 border-b border-gray-100 dark:border-gray-800">
-                                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Shop by Category</p>
-                                    </div>
-                                    {categories.map(c => (
-                                        <Link key={c.href} href={c.href} onClick={() => setOpenCat(false)}
-                                            className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent transition-colors text-sm">
-                                            <span className="text-lg">{c.icon}</span>
-                                            <span className="font-medium">{c.label}</span>
-                                        </Link>
-                                    ))}
-                                    <div className="mt-1 pt-2 border-t border-gray-100 dark:border-gray-800">
-                                        <Link href="/products" onClick={() => setOpenCat(false)}
-                                            className="block mx-4 text-xs text-primary font-medium hover:underline">View all categories →</Link>
-                                    </div>
-                                </div>
-                            </>
-                        )}
-                    </div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className="group flex items-center gap-1 px-3 py-2 text-muted-foreground hover:text-foreground text-sm font-medium transition-colors">
+                                Categories
+                                <ChevronDown className="w-3.5 h-3.5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-72 fixed z-[9999]">
+                            <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Shop by Category</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            {categories.map(c => (
+                                <DropdownMenuItem key={c.href} asChild className="gap-3 py-2 font-medium">
+                                    <Link href={c.href}>
+                                        <span className="text-lg" aria-hidden="true">{c.icon}</span>
+                                        <span>{c.label}</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                            ))}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild className="text-primary font-medium">
+                                <Link href="/products">View all categories →</Link>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
                     {/* Brands dropdown */}
-                    <div className="relative">
-                        <button
-                            onMouseEnter={() => setOpenBrands(true)}
-                            onMouseLeave={() => setOpenBrands(false)}
-                            className="flex items-center gap-1 px-3 py-2 text-white/70 hover:text-white text-sm font-medium transition-colors"
-                        >
-                            Brands
-                            <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", openBrands && "rotate-180")} />
-                        </button>
-                        {openBrands && (
-                            <>
-                                <div className="fixed inset-0 z-10" onClick={() => setOpenBrands(false)} />
-                                <div className="absolute top-full left-0 z-20 w-56 bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-800 py-2 animate-in fade-in slide-in-from-top-2">
-                                    <div className="px-4 pb-2 mb-1 border-b border-gray-100 dark:border-gray-800">
-                                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Popular Brands</p>
-                                    </div>
-                                    {brands.map(b => (
-                                        <Link key={b.href} href={b.href} onClick={() => setOpenBrands(false)}
-                                            className="block px-4 py-2.5 hover:bg-accent transition-colors text-sm font-medium">{b.label}</Link>
-                                    ))}
-                                </div>
-                            </>
-                        )}
-                    </div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className="group flex items-center gap-1 px-3 py-2 text-muted-foreground hover:text-foreground text-sm font-medium transition-colors">
+                                Brands
+                                <ChevronDown className="w-3.5 h-3.5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-56 fixed z-[9999]">
+                            <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Popular Brands</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            {brands.map(b => (
+                                <DropdownMenuItem key={b.href} asChild className="font-medium">
+                                    <Link href={b.href}>{b.label}</Link>
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
                     {quickLinks.map(l => (
                         <Link key={l.href} href={l.href}
-                            className={cn("px-3 py-2 text-sm font-medium transition-colors hover:text-white", l.href === "/sale" && "text-red-400 hover:text-red-300")}>
+                            className={cn("px-3 py-2 text-sm font-medium transition-colors", l.href === "/sale" ? "text-red-700 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400" : "text-foreground hover:text-muted-foreground")}>
                             {l.label}
                         </Link>
                     ))}
@@ -147,22 +134,22 @@ export default function DesktopNav({ userId }: DesktopNavProps) {
 
                 <div className="flex-1" />
                 <div className="flex items-center gap-0.5">
-                    <button onClick={() => setSearchOpen(true)} className="p-2 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10" aria-label="Search">
+                    <button onClick={() => setSearchOpen(true)} className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted" aria-label="Search">
                         <Search className="w-5 h-5" />
                     </button>
                     {userId ? (
-                        <Link href="/account" className="p-2 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10" title="Account">
+                        <Link href="/account" className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted" title="Account">
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
                         </Link>
                     ) : (
-                        <RainbowButton asChild variant="outline" size="sm" className="hidden sm:inline-flex ml-1 text-white/80 hover:text-white dark:bg-transparent dark:text-white/80">
+                        <RainbowButton asChild variant="outline" size="sm" className="hidden sm:inline-flex ml-1 dark:bg-transparent">
                             <Link href="/sign-in">
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
                                 Sign In
                             </Link>
                         </RainbowButton>
                     )}
-                    <Link href="/account/wishlist" className="p-2 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10 hidden sm:block" title="Wishlist">
+                    <Link href="/account/wishlist" className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted hidden sm:block" title="Wishlist">
                         <Heart className="w-5 h-5" />
                     </Link>
                     <BasketButton />

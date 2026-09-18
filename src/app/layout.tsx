@@ -22,8 +22,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Fashion Corner",
-  description: "Your go-to destination for trendy, timeless, and unique fashion. Discover curated styles that define you. Elevate your wardrobe effortlessly.",
+  title: "Fashion Corner — by Mohammad Tavakoli Kia",
+  description: "Your go-to destination for trendy, timeless, and unique fashion. Discover curated styles that define you. Built by Mohammad Tavakoli Kia (mohammadtavakolikia.ir).",
+  alternates: {
+    canonical: "https://mohammadtavakolikia.ir",
+  },
+  openGraph: {
+    siteName: "Fashion Corner",
+    url: "https://mohammadtavakolikia.ir",
+  },
 };
 
 export default async function RootLayout({
@@ -49,7 +56,7 @@ export default async function RootLayout({
               <BodyCleanup />
               <ScrollProgress className="fixed top-0 z-[70] h-0.5 bg-gradient-to-r from-orange-400 via-purple-500 to-pink-500" />
               <Navbar userId={userId} />
-              <main className="flex-grow pt-[92px] md:pt-20 pb-16 md:pb-0">
+              <main className="flex-grow pt-[92px] md:pt-5 pb-16 md:pb-0">
                 {children}
               </main>
               <Footer />

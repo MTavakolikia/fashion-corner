@@ -14,7 +14,7 @@ interface MobileHeaderProps {
 
 const quickLinks = [
     { href: "/new-arrivals", label: "New" },
-    { href: "/sale", label: "Sale", cls: "text-red-400" },
+    { href: "/sale", label: "Sale", cls: "text-red-700 dark:text-red-500" },
     { href: "/categories/womens", label: "Women" },
     { href: "/categories/mens", label: "Men" },
     { href: "/categories/accessories", label: "Accessories" },
@@ -25,16 +25,16 @@ export default function MobileHeader({ userId }: MobileHeaderProps) {
 
     return (
         <>
-            <header className="md:hidden fixed top-0 inset-x-0 z-50 bg-black/95 backdrop-blur-md border-b border-white/10">
+            <header className="md:hidden fixed top-0 inset-x-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
                 <div className="flex items-center justify-between px-4 py-3">
                     <Link href="/" className="flex items-center gap-2">
                         <Image src="/images/fashion-corner.png" alt="logo" width={28} height={26} />
-                        <span className="text-white font-bold text-base">Fashion Corner</span>
+                        <span className="text-foreground font-bold text-base">Fashion Corner</span>
                     </Link>
                     <div className="flex items-center gap-0.5">
-                        <Link href="/account/wishlist" className="p-2 text-white/70 hover:text-white transition-colors"><Heart className="w-5 h-5" /></Link>
+                        <Link href="/account/wishlist" className="p-2 text-muted-foreground hover:text-foreground transition-colors"><Heart className="w-5 h-5" /></Link>
                         <BasketButton />
-                        <button onClick={() => setMenuOpen(true)} className="p-2 text-white/70 hover:text-white transition-colors ml-1">
+                        <button onClick={() => setMenuOpen(true)} className="p-2 text-muted-foreground hover:text-foreground transition-colors ml-1">
                             <Menu className="w-5 h-5" />
                         </button>
                     </div>
@@ -42,7 +42,7 @@ export default function MobileHeader({ userId }: MobileHeaderProps) {
                 {/* Quick link pills */}
                 <div className="flex items-center gap-0 px-2 pb-2 overflow-x-auto scrollbar-hide">
                     {quickLinks.map(l => (
-                        <Link key={l.href} href={l.href} className={cn("px-3 py-1 mr-1 text-xs font-medium rounded-full whitespace-nowrap transition-colors", l.cls ?? "text-white/60 hover:text-white hover:bg-white/10")}>
+                        <Link key={l.href} href={l.href} className={cn("px-3 py-1 mr-1 text-xs font-medium rounded-full whitespace-nowrap transition-colors", l.cls ?? "text-foreground hover:bg-muted")}>
                             {l.label}
                         </Link>
                     ))}
@@ -63,7 +63,7 @@ export default function MobileHeader({ userId }: MobileHeaderProps) {
                             <div className="px-5 py-3">
                                 <Link href="/products" onClick={() => setMenuOpen(false)} className="block py-2.5 text-base font-medium border-b border-gray-100 dark:border-gray-800">All Products</Link>
                                 <Link href="/new-arrivals" onClick={() => setMenuOpen(false)} className="block py-2.5 text-base font-medium border-b border-gray-100 dark:border-gray-800">New Arrivals</Link>
-                                <Link href="/sale" onClick={() => setMenuOpen(false)} className="block py-2.5 text-base font-medium border-b border-gray-100 dark:border-gray-800 text-red-500">Sale</Link>
+                                <Link href="/sale" onClick={() => setMenuOpen(false)} className="block py-2.5 text-base font-medium border-b border-gray-100 dark:border-gray-800 text-red-700 dark:text-red-500">Sale</Link>
                             </div>
 
                             <div className="px-5 py-3 border-t border-gray-100 dark:border-gray-800">
@@ -114,9 +114,10 @@ export default function MobileHeader({ userId }: MobileHeaderProps) {
                                     <Link href="/sign-in" onClick={() => setMenuOpen(false)} className="flex-1 py-2 text-center text-sm font-medium bg-primary text-primary-foreground rounded-lg">Sign In</Link>
                                 )}
                             </div>
-                            <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
-                                <span>+1 234 567 890</span>
-                                <span>support@fashioncorner.com</span>
+                            <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground flex-wrap">
+                                <a href="https://mohammadtavakolikia.ir" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">mohammadtavakolikia.ir</a>
+                                <span>·</span>
+                                <span>Mohammad Tavakoli Kia</span>
                             </div>
                         </div>
                     </div>
