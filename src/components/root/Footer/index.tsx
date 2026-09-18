@@ -4,9 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import {
-    MapPin, Phone, Mail,
-    Truck, ShieldCheck, RotateCcw, Globe, ArrowUp,
-    Link as LinkIcon,
+    MapPin, Phone, Mail, Globe,
+    Truck, ShieldCheck, RotateCcw, ArrowUp,
 } from "lucide-react";
 import Visa from "./images/visa.svg";
 import Mastercard from "./images/mastercard.svg";
@@ -31,7 +30,7 @@ const footerLinks = {
         { name: "FAQ",                 href: "/faq" },
         { name: "Shipping Info",       href: "/shipping" },
         { name: "Returns & Exchanges", href: "/returns" },
-        { name: "Size Guide",          href: "/faq" },
+        { name: "Size Guide",          href: "/size-guide" },
         { name: "Track Your Order",    href: "/account/orders" },
         { name: "Contact Us",          href: "/contact" },
     ],
@@ -39,7 +38,7 @@ const footerLinks = {
         { name: "About Us",          href: "/about" },
         { name: "Privacy Policy",    href: "/privacy" },
         { name: "Terms of Service",  href: "/terms" },
-        { name: "Careers",           href: "/about" },
+        { name: "Careers",           href: "/careers" },
     ],
 };
 
@@ -52,10 +51,10 @@ const paymentMethods = [
 ];
 
 const socialLinks = [
-    { label: "Facebook", href: "#" },
-    { label: "Instagram", href: "#" },
-    { label: "Twitter", href: "#" },
-    { label: "LinkedIn", href: "#" },
+    { label: "GitHub",         href: "https://github.com/MTavakolikia" },
+    { label: "LinkedIn",       href: "https://linkedin.com/in/mohammad-tavakolikia" },
+    { label: "Twitter",        href: "https://twitter.com/webdev_mohammad" },
+    { label: "Instagram",      href: "https://instagram.com/mtavakolikia" },
 ];
 
 export function Footer() {
@@ -104,10 +103,17 @@ export function Footer() {
                         <p className="text-sm text-white/60 leading-relaxed max-w-sm">
                             Your premium destination for trendy, timeless fashion. Curated collections from the world&apos;s most iconic brands and emerging designers.
                         </p>
+                        <a
+                            href="https://mohammadtavakolikia.ir"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline mt-1"
+                        >
+                            <Globe className="w-3.5 h-3.5" />
+                            mohammadtavakolikia.ir
+                        </a>
                         <div className="space-y-2 text-sm text-white/60">
-                            <div className="flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" /><span>123 Fashion Street, Style City</span></div>
-                            <div className="flex items-center gap-2"><Phone className="w-4 h-4 text-primary" /><span>+1 234 567 890</span></div>
-                            <div className="flex items-center gap-2"><Mail className="w-4 h-4 text-primary" /><span>support@fashioncorner.com</span></div>
+                            <div className="flex items-center gap-2"><Mail className="w-4 h-4 text-primary shrink-0" /><span>mohammadtavakolikia66@gmail.com</span></div>
                         </div>
                         {/* Social */}
                         <div className="flex gap-2 pt-1">
@@ -122,7 +128,7 @@ export function Footer() {
 
                     {/* Shop */}
                     <div>
-                        <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">Shop</h3>
+                        <h3 className="text-sm font-semibold uppercase tracking-wider text-white/60 mb-4">Shop</h3>
                         <ul className="space-y-2.5">
                             {footerLinks.shop.map(l => (
                                 <li key={l.name}>
@@ -134,7 +140,7 @@ export function Footer() {
 
                     {/* Help */}
                     <div>
-                        <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">Help</h3>
+                        <h3 className="text-sm font-semibold uppercase tracking-wider text-white/60 mb-4">Help</h3>
                         <ul className="space-y-2.5">
                             {footerLinks.help.map(l => (
                                 <li key={l.name}>
@@ -146,7 +152,7 @@ export function Footer() {
 
                     {/* Company */}
                     <div>
-                        <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">Company</h3>
+                        <h3 className="text-sm font-semibold uppercase tracking-wider text-white/60 mb-4">Company</h3>
                         <ul className="space-y-2.5">
                             {footerLinks.company.map(l => (
                                 <li key={l.name}>
@@ -180,7 +186,7 @@ export function Footer() {
                         ) : (
                             <form onSubmit={handleSubscribe} className="flex gap-2 w-full md:w-auto">
                                 <input type="email" required placeholder="Enter your email" value={email} onChange={e => setEmail(e.target.value)}
-                                    className="flex-1 md:w-64 px-4 py-2.5 rounded-lg bg-white/10 border border-white/10 text-sm text-white placeholder:text-white/40 outline-none focus:border-primary transition-colors"
+                                    className="flex-1 md:w-64 px-4 py-2.5 rounded-lg bg-white/10 border border-white/10 text-sm text-white placeholder:text-white/50 outline-none focus:border-primary transition-colors"
                                 />
                                 <ShimmerButton
                                     type="submit"
@@ -200,12 +206,12 @@ export function Footer() {
             <div className="border-t border-white/10">
                 <div className="max-w-7xl mx-auto px-4 py-5">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                        <p className="text-sm text-white/40">© {new Date().getFullYear()} Fashion Corner. All rights reserved.</p>
+                        <p className="text-sm text-white/60">© {new Date().getFullYear()} Fashion Corner · Built by <a href="https://mohammadtavakolikia.ir" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Mohammad Tavakoli Kia</a>.</p>
 
                         <div className="flex items-center gap-4">
                             {/* Payment icons */}
                             <div className="flex items-center gap-2">
-                                <span className="text-xs text-white/30">Pay with:</span>
+                                <span className="text-xs text-white/50">Pay with:</span>
                                 <div className="flex gap-1.5">
                                     {paymentMethods.map(m => (
                                         <div key={m.name} className="relative w-10 h-6 bg-white rounded overflow-hidden">
@@ -215,7 +221,7 @@ export function Footer() {
                                 </div>
                             </div>
 
-                            <div className="flex gap-3 text-xs text-white/40">
+                            <div className="flex gap-3 text-xs text-white/60">
                                 <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
                                 <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
                             </div>
